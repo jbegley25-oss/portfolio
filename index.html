@@ -39,7 +39,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offse
 /* hero */
 .hero{min-height:calc(100vh - 80px)!important;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(16px,3vw,40px);align-items:center;min-height:min(calc(100vh - 70px),720px);padding-top:24px}
 .hi{font-size:clamp(46px,6.4vw,84px)}
-.hi .l{display:inline-block;transition:transform .2s}
+.hi .w{display:inline-block;white-space:nowrap}.hi .l{display:inline-block;transition:transform .2s}
 .hi .l:hover{transform:rotate(-8deg) scale(1.15)}
 .under{display:block;width:min(360px,80%);height:22px;margin:4px 0 18px}
 .under path{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1s .4s ease forwards}
@@ -591,7 +591,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 /* hero letters in rotating marker colors */
 const hc=[C.red,C.blue,C.green,C.orange,C.purple,C.black];
 let ci=0;
-$("#hi").innerHTML="Hi, I'm Jack.".split("").map(ch=>ch===" "?" ":`<span class="l" aria-hidden="true" style="color:${hc[(ci++)%6]}">${esc(ch)}</span>`).join("");
+$("#hi").innerHTML="Hi, I'm Jack.".split(" ").map(w=>`<span class="w">${w.split("").map(ch=>`<span class="l" aria-hidden="true" style="color:${hc[(ci++)%6]}">${esc(ch)}</span>`).join("")}</span>`).join(" ");
 
 /* wobbly ring path */
 const ring=(cx,cy,rx,ry,seed)=>{let d="",n=14;for(let i=0;i<=n+2;i++){const a=i/n*Math.PI*2+seed,j=1+Math.sin(i*2.3+seed*5)*.06;const x=cx+Math.cos(a)*rx*j,y=cy+Math.sin(a)*ry*j;d+=(i?" L":"M")+x.toFixed(1)+" "+y.toFixed(1)}return d};
