@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jack Begley — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Kalam:wght@300;400;700&family=Geist:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* VOICE: playful, confident, a designer's whiteboard — loud markers, lots of white air
+   IDEA: the page is a dry-erase whiteboard Jack has been mapping his work on
+   PICTURE: a hand-drawn mind map radiating from his name to each project, arrows drawing in
+   COLOUR and TYPE: pure white board, six Expo marker colours (one per project), Permanent Marker + Kalam
+   LAYOUT: marker-tray nav, mind-map hero, sticky-note project grid, process loop, about, contact */
+:root{color-scheme:light;--bg:#fff;--ink:#1b1b1f;--soft:#5b5b66;
+--black:#1b1b1f;--blue:#1f5fd1;--red:#e0352b;--green:#12995a;--orange:#ef7409;--purple:#8a3fd1}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:80px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 18px/1.5 Kalam,"Comic Sans MS",cursive;overflow-x:clip;position:relative}
+h1,h2,h3,.mk{font-family:"Permanent Marker",Kalam,cursive;font-weight:400;line-height:1.05;margin:0}
+a{color:inherit}
+.band{padding:clamp(32px,5vw,72px) max(5vw,16px);max-width:1280px;margin:0 auto}
+/* nav = marker tray */
+nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:2px solid #eee}
+.nav{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:10px max(5vw,16px);max-width:1280px;margin:0 auto}
+.logo{font-size:26px;text-decoration:none}
+.links{display:flex;gap:16px;flex-wrap:wrap}
+.links a{text-decoration:none;font-weight:700;font-size:18px}
+.links a:hover{text-decoration:underline wavy var(--red) 2px}
+.tray{margin-left:auto;display:flex;align-items:center;gap:8px;background:#f4f4f6;border-radius:30px;padding:6px 10px}
+.tray span{font-size:15px;color:var(--soft);margin-right:2px}
+.cap{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #ddd;cursor:pointer;padding:0;transition:transform .15s}
+.cap:hover{transform:scale(1.15)}
+.cap[aria-pressed=true]{box-shadow:0 0 0 3px var(--ink);transform:scale(1.15)}
+.tbtn{font:700 15px Kalam,cursive;border:0;background:none;cursor:pointer;padding:6px 8px;color:var(--ink);border-radius:8px}
+.tbtn:hover{background:#e6e6ea}
+button:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+/* hero */
+.hero{min-height:calc(100vh - 80px)!important;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(16px,3vw,40px);align-items:center;min-height:min(calc(100vh - 70px),720px);padding-top:24px}
+.hi{font-size:clamp(46px,6.4vw,84px)}
+.hi .l{display:inline-block;transition:transform .2s}
+.hi .l:hover{transform:rotate(-8deg) scale(1.15)}
+.under{display:block;width:min(360px,80%);height:22px;margin:4px 0 18px}
+.under path{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1s .4s ease forwards}
+.lede{font-size:clamp(20px,2vw,24px);max-width:30ch;margin:0 0 16px}
+.meta{color:var(--soft);font-size:17px;margin:0 0 24px}
+.cta{display:inline-block;font:400 22px "Permanent Marker",cursive;text-decoration:none;padding:12px 22px;border:3px solid var(--ink);border-radius:255px 15px 225px 15px/15px 225px 15px 255px;transition:transform .15s,background .15s}
+.cta:hover{background:var(--ink);color:#fff;transform:rotate(-2deg)}
+.map{position:relative;width:100%;aspect-ratio:1000/620}
+.map svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.map .arr{fill:none;stroke-width:4;stroke-linecap:round}
+.map .node{cursor:pointer}
+.map .node text{font:400 34px "Permanent Marker",cursive}
+.map .node .sub{font:400 21px Kalam,cursive;fill:var(--soft)}
+.map .node g{transition:transform .2s;transform-box:fill-box;transform-origin:center}
+.map .node:hover g,.map .node:focus g{transform:scale(1.08) rotate(-3deg)}
+.map .node:focus{outline:none}
+.map .ring{fill:none;stroke-width:4;stroke-linecap:round}
+.map .lvl{transition:transform .38s cubic-bezier(.3,.7,.3,1),opacity .38s;transform-box:view-box}
+.map .lvl.in{transform:scale(.55);opacity:0}.map .lvl.zoom{transform:scale(2.6);opacity:0}.map .lvl.shrink{transform:scale(.4);opacity:0}
+.map .hub.back{cursor:zoom-out}.map .hub.back:hover .ring{stroke-width:6}
+.map.pre{visibility:hidden}
+.fadein{animation:hubin .6s ease-out}
+.cta.gone{opacity:0;transform:translateY(10px) scale(.9);pointer-events:none;transition:opacity .35s,transform .35s}
+#reveal{font:400 22px "Permanent Marker",cursive;background:#fff;color:var(--ink);cursor:pointer}#reveal:hover{color:#fff;background:var(--ink)}
+.ring.drawin{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .7s .05s cubic-bezier(.65,0,.35,1) forwards}
+.lvl.slowin .hub text{opacity:0;animation:hubin .5s .45s ease-out forwards}@keyframes hubin{from{opacity:0;filter:blur(6px);letter-spacing:.2em}to{opacity:1;filter:blur(0);letter-spacing:0}}
+.spark circle{opacity:0;transform-box:fill-box;transform-origin:center;animation:spk .7s var(--dl) ease-out forwards}@keyframes spk{0%{opacity:0;transform:translate(0,0) scale(.4)}25%{opacity:1}100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(1.2)}}
+.lvl .hub text{transition:opacity .4s}.map .node.pop{opacity:0;animation:pop .6s var(--dl) cubic-bezier(.22,1.4,.36,1) forwards}
+@keyframes pop{0%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.5);filter:blur(5px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:none}}.map .node.pop{transform-box:fill-box;transform-origin:center}
+.links a[aria-current=page]{text-decoration:underline wavy var(--red) 2px;text-underline-offset:6px}
+.pane[hidden]{display:none}main.pane{padding-top:10px;min-height:70vh}
+.map .hub.me{cursor:pointer}.map .hub.me:hover .ring{stroke-width:6}.map .hub.me:hover text{fill:#e0352b}
+figure.me-photo{width:min(300px,80%);margin:0 auto 34px}figure.me-photo img{width:100%;display:block}
+.mapback{position:absolute;top:0;left:0;z-index:2;font:400 18px "Permanent Marker",cursive;background:#fff;border:2.5px solid var(--ink);border-radius:30px 8px 30px 8px;padding:8px 14px;min-height:44px;cursor:pointer;color:var(--ink)}.mapback[hidden]{display:none}
+.filmcard{text-align:left;font:inherit;color:inherit;background:none;border-top:0;border-right:0;border-bottom:0;cursor:pointer}.filmcard img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px;margin-bottom:8px}.filmcard p{color:var(--c)}
+.mcard.flash{animation:flash 1.4s ease}@keyframes flash{0%,60%{background:color-mix(in srgb,var(--c) 14%,#fff)}100%{background:transparent}}
+.hint{font-size:16px;color:var(--soft);text-align:center;margin:22px 0 0}
+@keyframes draw{to{stroke-dashoffset:0}}
+.mlist{display:none}
+/* sections */
+.head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.head h2{font-size:clamp(36px,4.5vw,52px)}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font:700 16px Kalam,cursive;padding:8px 16px;min-height:44px;border:2.5px solid var(--ink);background:#fff;border-radius:30px 8px 30px 8px;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--ink);color:#fff}
+.gsec{margin-top:64px;scroll-margin-top:90px}.gsec[hidden]{display:none}.ghead{display:flex;align-items:baseline;gap:8px 20px;flex-wrap:wrap;margin-bottom:26px;padding-bottom:12px;border-bottom:3px solid var(--c)}.ghead h3{font-size:clamp(30px,3.6vw,42px);color:var(--c)}.ghead p{margin:0;color:var(--soft);font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:32px}
+.card{--c:var(--ink);position:relative;text-align:left;font:inherit;color:inherit;background:#fff;cursor:pointer;padding:26px 24px 22px;border:3.5px solid var(--c);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;transform:rotate(var(--r,0deg));transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;gap:10px}
+.card:hover,.card:focus-visible{transform:rotate(0) translateY(-6px);box-shadow:8px 10px 0 color-mix(in srgb,var(--c) 22%,transparent)}
+.card .k{font-size:16px;font-weight:700;color:var(--c)}
+.card h3{font-size:clamp(28px,2.6vw,34px);color:var(--c)}
+.card p{margin:0;font-size:18px}
+.card .yr{font-size:15px;color:var(--soft)}
+.card .more{margin-top:auto;font:400 18px "Permanent Marker",cursive;color:var(--c)}
+.card .more::after{content:" →";display:inline-block;transition:transform .2s}
+.card:hover .more::after{transform:translateX(6px)}
+.card.lead{grid-column:span 2}
+.card.lead::before{content:"lead project!";position:absolute;top:-16px;right:24px;background:#fff;padding:0 8px;font:400 18px "Permanent Marker",cursive;color:var(--c);transform:rotate(4deg)}
+.card[hidden]{display:none}
+/* process */
+.proc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;position:relative}
+.step{text-align:center;padding:10px}
+.step svg{width:100%;max-width:150px;height:auto;display:block;margin:0 auto 8px}
+.step h3{font-size:28px}
+.step p{margin:6px 0 0;font-size:17px}
+/* about */
+.about{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:40px;align-items:start}
+.about p{margin:0 0 14px;font-size:19px;max-width:62ch}
+.tools{display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:0;list-style:none}
+.tools li{padding:6px 14px;border:2.5px solid var(--t,var(--ink));color:var(--t,var(--ink));border-radius:20px 6px 20px 6px;font-weight:700;font-size:16px}
+.note{background:#fff8b8;padding:22px;transform:rotate(1.5deg);box-shadow:4px 6px 0 #e8e0a0;margin-top:20px}
+.note h3{font-size:24px;margin-bottom:6px}
+.note p{font-size:17px;margin:0}
+/* contact */
+.contact{text-align:center;padding-bottom:110px}
+.contact h2{font-size:clamp(44px,7vw,92px)}
+.contact h2 span:nth-child(1){color:var(--red)}.contact h2 span:nth-child(2){color:var(--blue)}.contact h2 span:nth-child(3){color:var(--green)}
+.contact p{font-size:21px;margin:10px auto 18px;max-width:40ch}.contact .addr{font-size:22px;color:var(--purple)}
+.row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+/* modal */
+dialog{border:0;padding:0;max-width:none;max-height:none;width:100vw;height:100dvh;background:transparent;margin:0;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
+dialog[open]{display:flex}
+dialog .sheet{--p:0;--pull:0px;width:calc(min(900px,94vw) + (100vw - min(900px,94vw)) * var(--p));height:calc(86dvh + 14dvh * var(--p));max-height:none!important;margin-bottom:calc(7dvh * (1 - var(--p)));border-radius:calc(16px * (1 - var(--p)))!important;transform:translateY(var(--pull));transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+dialog .sheet{padding-inline:max(clamp(24px,5vw,56px),calc((100vw - 860px) / 2 * var(--p)))!important}
+dialog .sheet.drag{transition:none}
+dialog .sheet.enter{transform:translateY(55dvh) scale(.6);opacity:0}
+dialog .sheet.leave{transform:translateY(105dvh)!important;transition:transform .42s cubic-bezier(.5,0,.75,0)}
+.sheet .pullhint{position:sticky;top:-12px;height:0;display:flex;justify-content:center;pointer-events:none}.sheet .pullhint::before{content:"";width:44px;height:5px;border-radius:3px;background:#d4d4da;margin-top:-26px;opacity:calc(1 - var(--p))}
+@media(prefers-reduced-motion:reduce){dialog .sheet,dialog .sheet.leave{transition:none}}
+dialog::backdrop{background:rgba(255,255,255,.82);backdrop-filter:blur(3px);transition:opacity .4s}
+.sheet{--c:var(--ink);--serif:"Instrument Serif",Georgia,serif;--sans:Geist,system-ui,-apple-system,sans-serif;font:400 17px/1.65 var(--sans);color:#1d1d22;background:#fff;scroll-behavior:smooth;border:0;border-top:6px solid var(--c);border-radius:14px;box-shadow:0 30px 80px rgba(20,20,30,.22),0 0 0 1px rgba(0,0,0,.06);padding:clamp(24px,5vw,56px);position:relative;max-height:92vh;overflow:auto;overscroll-behavior:contain;-webkit-font-smoothing:antialiased}
+.sheet h3{font:400 clamp(38px,5vw,58px)/1.02 var(--serif);letter-spacing:-.01em;color:#141418;margin:10px 0 14px;padding-right:44px;text-wrap:balance}
+.sheet .k{font:500 14px/1.4 var(--sans);color:var(--c);padding-right:44px}
+.sheet .sum{font:400 clamp(19px,2.1vw,22px)/1.5 var(--sans);color:#33333a;margin:0 0 26px;max-width:58ch}
+.sheet p{font-size:17px;max-width:66ch;margin:0 0 14px;color:#2b2b31}
+.meta2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:16px 28px;margin:0 0 22px;padding:20px 0;border-top:1px solid #e6e6ea;border-bottom:1px solid #e6e6ea}
+.meta2 dt{font:500 13px/1.3 var(--sans);color:#7a7a84}.meta2 dd{margin:4px 0 0;font-size:15px;line-height:1.45;color:#1d1d22}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:16px;margin:18px 0}
+.stats div{background:color-mix(in srgb,var(--c) 7%,#fff);border-radius:12px;padding:16px 18px}
+.stats b{display:block;font:400 clamp(34px,4.4vw,46px)/1 var(--serif);color:var(--c)}.stats span{font-size:14px;line-height:1.4;display:block;margin-top:8px;color:#4a4a52}
+figure{margin:30px 0}figure img{max-width:100%;width:auto;margin:0 auto;height:auto;display:block;border-radius:10px;background:#f4f4f4;box-shadow:0 0 0 1px rgba(0,0,0,.07),0 10px 30px rgba(0,0,0,.08)}
+figcaption{font:400 14px/1.5 var(--sans);color:#6d6d76;margin-top:10px}
+blockquote{margin:32px 0;padding:4px 0 4px 22px;border-left:3px solid var(--c);font:italic 400 clamp(24px,3vw,32px)/1.25 var(--serif);color:#141418;max-width:30ch}
+.sheet li b,.sheet p b{color:#141418;font-weight:600}.sheet li a{color:inherit;text-decoration:underline;text-decoration-color:var(--c);text-underline-offset:3px}
+.cta.small{font:500 15px var(--sans);padding:10px 18px;border:1.5px solid var(--c);border-radius:999px;color:var(--c);margin:0 0 6px;display:inline-block}
+.cta.small:hover{background:var(--c);color:#fff}
+.card[data-id=supply] .thumb{object-position:50% 22%}.card[data-id=leopard] .thumb{object-fit:contain;background:#fff}
+.thumb{width:calc(100% + 8px);margin:-6px -4px 4px;aspect-ratio:16/9;object-fit:cover;border-radius:6px 18px 8px 16px/16px 8px 18px 6px;border:2.5px solid var(--c)}
+.thumb.doodle{background:#fffaf0;padding:10px;object-fit:contain}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:22px}
+.mcard{--c:var(--ink);border-left:5px solid var(--c);padding:6px 10px 6px 16px;border-radius:0 8px 8px 0}
+.mcard .k{font-weight:700;color:var(--c);font-size:15px}.mcard h3{font-size:24px;color:var(--c);margin:2px 0 4px}.mcard p{margin:0;font-size:17px}
+.sheet h4{font:600 20px/1.3 var(--sans);letter-spacing:-.01em;color:#141418;margin:34px 0 10px}
+.sheet ul{margin:0;padding-left:22px}
+.sheet li{margin:0 0 10px;font-size:17px;color:#2b2b31;padding-left:4px}
+.sheet li::marker{color:var(--c)}
+.x{position:sticky;float:right;top:0;margin:-8px -8px 0 0;width:44px;height:44px;border:0;border-radius:50%;background:#f2f2f4;font:400 24px/1 var(--sans);cursor:pointer;color:#33333a;z-index:2}.x:hover{background:#e6e6ea}
+.nav2{display:flex;justify-content:space-between;margin-top:40px;padding-top:20px;border-top:1px solid #e6e6ea;gap:10px}
+.nav2 button{font:500 15px var(--sans);background:none;border:0;cursor:pointer;color:var(--c);min-height:44px;padding:0 6px}
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:26px 20px;margin:8px 0 10px}.shop .item{display:flex;flex-direction:column;gap:6px;min-width:0}.car{position:relative;border-radius:10px;overflow:hidden;background:#f2f2f4}.trk{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;aspect-ratio:4/5}.trk::-webkit-scrollbar{display:none}.trk img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;scroll-snap-align:start}.cb{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#141418;font:400 22px/1 var(--sans);cursor:pointer;opacity:0;transition:opacity .2s;box-shadow:0 2px 8px rgba(0,0,0,.15)}.car:hover .cb,.cb:focus-visible{opacity:1}@media(hover:none){.cb{opacity:1}}.cb.prev{left:8px}.cb.next{right:8px}.dots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:5px;pointer-events:none}.dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.55)}.dots i.on{background:#fff}.shop .nm{font:500 15px/1.35 var(--sans);margin-top:6px;color:#141418;text-decoration:none}.shop .pr{display:flex;justify-content:space-between;font:400 14px var(--sans);color:#6d6d76}.shop .pr a{color:var(--c);font-weight:500;text-decoration:none}.shop .pr a:hover,.shop .nm:hover{text-decoration:underline}
+.skbox{margin:8px 0 18px;border-radius:12px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.07),0 10px 30px rgba(0,0,0,.06);padding:14px 14px 10px}
+.sksvg{display:block;width:100%;height:auto;margin-top:6px}
+.sksvg .skTitle{font:400 34px "Permanent Marker",cursive;fill:#1b1b1f}.sksvg .skU{fill:none;stroke:#e0352b;stroke-width:4;stroke-linecap:round}
+.skHelmet{fill:#fbfbfc;fill-opacity:.0;stroke:#1b1b1f;stroke-width:4;stroke-linejoin:round;cursor:crosshair}
+.skTrim{fill:#e9e9ee;stroke:#1b1b1f;stroke-width:3}.skVent{fill:#f1f1f4;stroke:#1b1b1f;stroke-width:2.5}
+.skVisor{fill:#22303d;stroke:#1b1b1f;stroke-width:4;cursor:crosshair}.skGlint{fill:none;stroke:#fff;stroke-opacity:.35;stroke-width:5;stroke-linecap:round}
+.skLine,.skGlint,.skVent,.skTrim{pointer-events:none}.skLine{fill:none;stroke:#1b1b1f;stroke-width:2;stroke-linecap:round;opacity:.55}
+.skLat line{stroke:#1f5fd1;stroke-width:1.6;transition:stroke .2s}.skLat circle{fill:#1f5fd1}
+#skLatAll{opacity:0;transition:opacity .5s}#skLatAll.on{opacity:.85}
+.skMagBg{fill:#fff}.skMag{fill:none;stroke:#1b1b1f;stroke-width:3.5}
+.skLeader{fill:none;stroke:#1b1b1f;stroke-width:2.5;stroke-linecap:round}
+.skSwatch{fill:#fff;stroke:#1b1b1f;stroke-width:3}.skRow{fill:none;stroke:#1f5fd1;stroke-width:2.2}
+.skNote{font:400 19px Kalam,cursive;fill:#1b1b1f}.skNote.sm{font-size:16px}.skTiny{font:700 13px Kalam,cursive;fill:#1b1b1f;text-anchor:middle}
+.skNum{fill:#ef7409}.skNumT{font:700 15px var(--sans);fill:#fff;text-anchor:middle;pointer-events:none}
+.skBird{fill:#fff;stroke:#1b1b1f;stroke-width:3;stroke-linejoin:round}.skBrain{fill:#fde9ec;stroke:#1b1b1f;stroke-width:2}.skBandEdge{fill:none;stroke:#1f5fd1;stroke-width:3}
+.skBirdT{font:400 22px "Permanent Marker",cursive;fill:#1b1b1f;text-anchor:middle}
+.hs{cursor:pointer;transition:opacity .25s}.hs.dim{opacity:.28}.hs:focus{outline:none}.hs:focus-visible .skNum,.hs.act .skNum{fill:#1f5fd1}
+.skRing{fill:none;stroke:#ef7409;stroke-width:3;animation:skr 1.1s ease-out forwards;opacity:0}@keyframes skr{0%{r:4;opacity:.9}100%{r:190;opacity:0}}
+@media(prefers-reduced-motion:reduce){.skRing{animation:none}}
+.h3bar{padding-right:50px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}.h3mode{font:500 14px var(--sans);border:1.5px solid #d6d6dc;background:#fff;border-radius:999px;padding:8px 14px;min-height:40px;cursor:pointer;color:#1d1d22}.h3mode[aria-pressed=true]{background:#141418;border-color:#141418;color:#fff}
+.h3read{margin-left:auto;font:500 14px var(--sans);color:#ef7409}
+.h3cap{font:400 15px/1.5 var(--sans);color:#2b2b31;margin:6px 4px 2px!important;min-height:1.5em}.h3hint{font:400 13px var(--sans);color:#8a8a94;margin:0 4px!important}
+figure.tape.wide{width:min(560px,92%);transform:rotate(1.5deg)}
+figure.vid video{width:100%;display:block;border-radius:10px;background:#000;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+figure.tape{position:relative;width:min(340px,80%);margin:34px auto 30px;padding:12px 12px 44px;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.08),0 14px 34px rgba(0,0,0,.14);transform:rotate(-2.5deg)}figure.tape img{border-radius:0;box-shadow:none}figure.tape::before,figure.tape::after{content:"";position:absolute;width:96px;height:28px;background:rgba(244,232,170,.82);top:-12px;box-shadow:0 1px 2px rgba(0,0,0,.06)}figure.tape::before{left:-18px;transform:rotate(-32deg)}figure.tape::after{right:-18px;transform:rotate(30deg)}
+#dlogo{display:block;height:64px;width:auto;margin:0 0 18px}#dlogo[hidden]{display:none}
+.sheet.preview .nav2{display:none}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}.pair figure{margin:0}.pair img{width:100%;aspect-ratio:3/4;object-fit:cover}.pair.wide img{aspect-ratio:auto;object-fit:contain;background:#fff}figure.tall img{max-height:78vh;width:auto;max-width:100%;margin:0 auto;display:block}
+.thumb.fit{object-fit:contain!important;background:#fff;padding:18px 22px;box-sizing:border-box}
+.vid.vtall video{width:auto;max-width:100%;max-height:80vh;margin:0 auto}.pvgal{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:4px 0 22px;padding-bottom:6px}.pvgal img{height:34vh;width:auto;flex:none;border-radius:10px;scroll-snap-align:start;object-fit:cover}
+#sheet.notitle #dlogo{margin-bottom:28px!important}#sheet.notitle #dk{margin-bottom:18px!important}#sheet.notitle #ds{font-size:1.4em!important;line-height:1.35!important;margin:0 0 36px!important}#sheet.notitle .pvgal{margin-bottom:34px!important}#sheet.notitle .pvpts li{margin-bottom:12px}
+.about p.pos{font-size:28px!important;line-height:1.2;margin:-4px 0 20px!important;color:#e0352b}.skills{margin-top:18px}.sk h4{font-size:19px;margin:16px 0 6px;font-weight:400}.note.obsess{margin-top:22px}
+.blabel{font:600 13px/1.2 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--c);margin:26px 0 10px}
+html.locked,html.locked body{overflow:hidden}
+#gate{position:fixed;inset:0;z-index:9999;background:#fff;display:grid;place-items:center;transition:opacity .55s ease,transform .55s ease}
+#gate.open{opacity:0;transform:scale(1.04);pointer-events:none}
+#gate .gbox{text-align:center;padding:24px}
+#gate .gk{font-size:46px;color:#1b1b1f;margin-bottom:6px}
+#gate .gp{font:500 15px/1.4 var(--sans);color:#6d6d76;margin:0 0 26px}
+#gate .gdots{display:flex;gap:16px;justify-content:center;margin-bottom:30px}
+#gate .gdots i{width:16px;height:16px;border-radius:50%;border:2.5px solid #1b1b1f;transition:background .15s,transform .15s}
+#gate .gdots i.on{background:#8a3fd1;border-color:#8a3fd1;transform:scale(1.1)}
+#gate.bad .gdots{animation:gshake .45s}
+#gate.bad .gdots i{border-color:#e0352b;background:#e0352b}
+@keyframes gshake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+#gate .gpad{display:grid;grid-template-columns:repeat(3,76px);gap:14px;justify-content:center}
+#gate .gpad button{width:76px;height:76px;border-radius:50%;border:2.5px solid #1b1b1f;background:#fff;font:400 30px/1 "Permanent Marker",Kalam,cursive;color:#1b1b1f;cursor:pointer;transition:transform .1s,background .15s}
+#gate .gpad button:nth-child(3n+1){border-color:#e0352b;color:#e0352b}#gate .gpad button:nth-child(3n+2){border-color:#1f5fd1;color:#1f5fd1}#gate .gpad button:nth-child(3n){border-color:#12995a;color:#12995a}
+#gate .gpad button:hover{background:#f6f3fb}#gate .gpad button:active{transform:scale(.92)}
+.pvimg{margin:4px 0 22px!important}.pvimg img{max-height:34vh;object-fit:cover;object-position:top}
+.pvpts{list-style:none;padding:0!important;margin:0 0 26px!important;display:grid;gap:12px}
+.pvpts li{position:relative;padding-left:30px!important;font-size:18px!important;line-height:1.45;color:#1d1d22!important}.pvpts li::before{content:"";position:absolute;left:4px;top:.55em;width:12px;height:12px;border-radius:50%;background:var(--c)}
+.readmore{font:500 16px var(--sans);background:var(--c);color:#fff;border:0;border-radius:999px;padding:14px 24px;min-height:48px;cursor:pointer;transition:transform .2s}.readmore:hover{transform:translateX(4px)}
+.sites{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:18px;margin:6px 0 10px}
+.site{display:flex;flex-direction:column;text-decoration:none;color:#1d1d22;border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06);transition:transform .2s,box-shadow .2s}
+.site:hover{transform:translateY(-4px);box-shadow:0 0 0 1px rgba(0,0,0,.08),0 14px 30px rgba(0,0,0,.12)}
+.sbar{display:flex;align-items:center;gap:5px;background:#f2f2f4;padding:8px 10px}.sbar i{width:8px;height:8px;border-radius:50%;background:#d0d0d6}.sbar em{font:400 12px var(--sans);font-style:normal;color:#6d6d76;margin-left:8px}
+.swm{display:grid;place-items:center;height:120px;background:color-mix(in srgb,var(--sc) 10%,#fff);color:var(--sc);font:400 30px "Permanent Marker",cursive;text-align:center;padding:0 10px}
+.site img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
+.sdesc{font:400 14.5px/1.5 var(--sans)!important;padding:14px 16px 6px;color:#3a3a42}.sgo{font:500 14px var(--sans);color:var(--sc);padding:0 16px 16px}
+figure img[src*="tlm-ops"]{max-width:min(620px,100%)}
+.bandsim{border-radius:14px;background:#fafafb;box-shadow:0 0 0 1px rgba(0,0,0,.07);padding:16px 18px 18px;margin:6px 0 20px}.bandsim canvas{width:100%;height:auto;display:block}
+.bs-state{text-align:center;margin:-4px 0 12px}.bs-name{display:block;font:400 34px/1.1 var(--serif);transition:color .3s}.bs-sub{font-size:14px;color:#6d6d76}
+.bs-hr{display:flex;align-items:center;gap:12px;font-size:14px;color:#4a4a52}.bs-hr input{flex:1;accent-color:#1d1d22;min-height:32px}.bs-hr output{min-width:64px;text-align:right;font-weight:600;color:#1d1d22}
+.bs-sw{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.bs-sw button{display:flex;align-items:center;gap:7px;font:500 14px var(--sans);border:1.5px solid #dcdce2;background:#fff;border-radius:999px;padding:7px 13px;min-height:40px;cursor:pointer;color:#1d1d22}.bs-sw button i{width:12px;height:12px;border-radius:50%;background:var(--sc)}.bs-sw button.on{border-color:var(--sc);box-shadow:0 0 0 2px color-mix(in srgb,var(--sc) 25%,transparent)}
+.bs-d{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.bs-d div{background:#fff;border-radius:10px;padding:10px 12px;box-shadow:0 0 0 1px rgba(0,0,0,.06)}.bs-d span{display:block;font-size:12px;color:#8a8a94}.bs-d b{font-size:15px;font-weight:600}
+.thesis{display:grid;grid-template-columns:150px minmax(0,1fr);gap:22px;align-items:center;margin:34px 0 8px;padding:20px;border-radius:14px;background:color-mix(in srgb,var(--c) 6%,#fff);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 25%,transparent);text-decoration:none;color:#1d1d22;transition:transform .2s}.thesis:hover{transform:translateY(-3px)}.thesis img{width:100%;border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,.15)}.thesis em{font:600 12px var(--sans);font-style:normal;color:var(--c);text-transform:none}.thesis b{display:block;font:400 26px/1.15 var(--serif);margin:4px 0 6px}.thesis small{display:block;font-size:13px;color:#6d6d76;margin-bottom:8px}.thesis>span>span{display:block;font-size:15px;line-height:1.5}.thesis i{display:inline-block;margin-top:10px;font:500 15px var(--sans);font-style:normal;color:var(--c)}@media(max-width:600px){.thesis{grid-template-columns:90px minmax(0,1fr);gap:14px}}
+.rbtns{display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 8px}
+.demo{display:inline-flex;align-items:center;gap:8px;font:500 14px var(--sans);color:#33333a;background:#f4f4f6;border-radius:999px;padding:8px 14px;margin:0 0 6px;text-decoration:none}.demo::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}a.demo:hover{background:#ebebef}
+/* doodle layer */
+#ink{position:absolute;left:0;top:0;pointer-events:none;z-index:15}
+body.doodling{cursor:crosshair;user-select:none;-webkit-user-select:none}body.doodling main,body.doodling header,body.doodling section{touch-action:none}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:30px;font-weight:700;z-index:30;transition:transform .3s}
+.toast{visibility:hidden}.toast.on{visibility:visible;transform:translateX(-50%) translateY(0)}
+@media(max-width:900px){.hero{grid-template-columns:1fr;min-height:0}.card.lead{grid-column:auto}.about{grid-template-columns:1fr}.proc{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.map{display:none}.mlist{display:flex;flex-wrap:wrap;gap:8px 18px;padding:0;margin:8px 0 0;list-style:none}
+.mlist button{font:400 24px "Permanent Marker",cursive;background:none;border:0;padding:4px 0;cursor:pointer;min-height:44px}
+.tray span{display:none}.tray{margin-left:0}.hint{display:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.under path{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<div id="gate" role="dialog" aria-modal="true" aria-label="Enter the code to view the portfolio">
+  <div class="gbox">
+    <div class="gk mk">Jack B.</div>
+    <p class="gp">Enter the code to see the work</p>
+    <div class="gdots" id="gdots"><i></i><i></i><i></i><i></i></div>
+    <div class="gpad" id="gpad">
+      <button type="button">1</button><button type="button">2</button><button type="button">3</button>
+      <button type="button">4</button><button type="button">5</button><button type="button">6</button>
+      <button type="button">7</button><button type="button">8</button><button type="button">9</button>
+      <span></span><button type="button">0</button><button type="button" data-del="1" aria-label="Delete">⌫</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var CODE="5234",g=document.getElementById("gate"),dots=document.querySelectorAll("#gdots i"),v="";
+  try{if(sessionStorage.getItem("jb-ok")==="1"){g.remove();return}}catch(e){}
+  document.documentElement.classList.add("locked");
+  function draw(){dots.forEach(function(d,i){d.className=i<v.length?"on":""})}
+  function press(k){
+    if(k==="del"){v=v.slice(0,-1);draw();return}
+    if(v.length>=4)return;v+=k;draw();
+    if(v.length===4){
+      if(v===CODE){try{sessionStorage.setItem("jb-ok","1")}catch(e){}g.classList.add("open");document.documentElement.classList.remove("locked");setTimeout(function(){g.remove()},650)}
+      else{g.classList.add("bad");setTimeout(function(){g.classList.remove("bad");v="";draw()},520)}
+    }
+  }
+  document.getElementById("gpad").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;press(b.dataset.del?"del":b.textContent)});
+  document.addEventListener("keydown",function(e){if(!document.getElementById("gate"))return;if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace")press("del")});
+})();
+</script>
+<nav><div class="nav">
+  <a class="logo mk" href="#top">Jack B.</a>
+  <div class="links" role="tablist"><a href="#board" data-tab="board">Board</a><a href="#work" data-tab="work">Work</a><a href="#about" data-tab="about">About</a></div>
+  <div class="tray" role="group" aria-label="Doodle on the page">
+    <span>grab a marker:</span>
+    <div id="caps" style="display:flex;gap:6px"></div>
+    <button class="tbtn" id="clear" type="button">wipe</button>
+  </div>
+</div></nav>
+<canvas id="ink" aria-hidden="true"></canvas>
+
+<header class="band hero pane" id="pane-board">
+  <div>
+    <h1 class="hi" id="hi" aria-label="Hi, I'm Jack."></h1>
+    <svg class="under" viewBox="0 0 360 22" aria-hidden="true"><path pathLength="1" d="M4 14 C 70 4, 140 20, 210 10 S 320 6, 356 12" fill="none" stroke="#e0352b" stroke-width="5" stroke-linecap="round"/></svg>
+    <p class="lede">I design products people actually want to use, then figure out how to tell the world about them.</p>
+    <p class="meta">Human-Centered Design, Claremont McKenna College '26 · Boulder, CO</p>
+    <button type="button" class="cta" id="reveal">See the work</button>
+    <ul class="mlist" id="mlist"></ul>
+  </div>
+  <div>
+    <div class="map" id="map"><button type="button" id="mapback" class="mapback" hidden>← back to Jack</button><svg viewBox="0 0 1000 620" id="mapsvg" role="img" aria-label="Mind map of Jack's projects"></svg></div>
+    <p class="hint" id="maphint">click a bubble to zoom in · or grab a marker up top and draw</p>
+  </div>
+</header>
+
+<main class="pane" id="pane-work" hidden>
+<section class="band" id="work">
+  <div class="head"><h2>The work</h2><div class="filters" id="filters"></div></div>
+  <div id="grid"></div>
+</section>
+
+<section class="band" id="more">
+  <div class="head"><h2>Also on the board</h2></div>
+  <div class="mgrid" id="mgrid"></div>
+</section>
+
+</main>
+<main class="pane" id="pane-about" hidden>
+<section class="band" id="about">
+  <div class="about">
+    <div>
+      <div class="head"><h2>About me</h2></div>
+      <p class="pos mk">Designer. Strategist. Builder.</p>
+      <p>I'm interested in why people do what they do, what makes them connect with things, and how a good idea becomes something real. I designed my own major at Claremont McKenna, bringing together human-centered design, psychology, environmental studies, technology, and storytelling.</p>
+      <p>I've worked across startups, beauty, outdoor recreation, and beverage, moving between research, branding, product development, and business strategy. I've built prototypes, developed marketing campaigns, explored new materials, designed customer experiences, and built AI-powered tools to make businesses work better. I like getting involved in the whole process, from figuring out the problem to putting something out into the world.</p>
+      <p>I'm especially drawn to the space between creativity and practicality. I love a strong brand, a well-designed product, a clever business model, and the little details that make an experience feel different. I'm usually thinking about how things could be better, more interesting, or done entirely differently.</p>
+      <p>Outside of work, you'll probably find me somewhere in the mountains, on a river, sketching out a new idea, or convincing someone we should build something. I'm happiest when I'm learning, making things, and working with people who aren't afraid to try something new.</p>
+      <div class="note obsess"><h3>A recurring obsession</h3><p>I keep designing trucks. A NovaBlonde glam van, a green jobs truck. I think it's because my answer to "how do we reach people?" is usually "go to where they already are."</p></div>
+    </div>
+    <div>
+      <figure class="tape me-photo"><img src="img/jack.jpg" alt="Jack Begley"></figure>
+      <div class="skills" id="tools"></div>
+      <div class="note"><h3>Right now</h3><p>Looking for product marketing and go-to-market roles at startups that move fast. San Francisco or New York.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="how">
+  <div class="head"><h2>How I work</h2></div>
+  <div class="proc" id="proc"></div>
+</section>
+
+<section class="band contact" id="contact">
+  <h2><span>Let's</span> <span>make</span> <span>something.</span></h2>
+  <p>I'm always happy to talk shop, products, or how to make a messy idea feel obvious.</p>
+  <p class="addr mk">jacksjpeg@gmail.com</p>
+  <div class="row" id="contactrow"></div>
+</section>
+</main>
+
+<dialog id="dlg" aria-labelledby="dt"><div class="sheet" id="sheet"><div class="pullhint" aria-hidden="true"></div>
+  <button class="x" id="x" type="button" aria-label="Close">×</button>
+  <img id="dlogo" alt="" hidden><div class="k" id="dk"></div>
+  <h3 id="dt"></h3>
+  <p class="sum" id="ds"></p>
+  <dl class="meta2" id="dm"></dl>
+  <div id="dlink"></div>
+  <div id="db"></div>
+  <div class="nav2"><button id="prev" type="button">← prev project</button><button id="next" type="button">next project →</button></div>
+</div></dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+{
+/* ---- edit these ---- */
+const CONTACT=[
+  {label:"Email me",href:"mailto:jacksjpeg@gmail.com"}
+];
+const C={black:"#1b1b1f",blue:"#1f5fd1",red:"#e0352b",green:"#12995a",orange:"#ef7409",purple:"#8a3fd1",gold:"#b9820f",olive:"#5b6e14",teal:"#0a8a8c",navy:"#1d3c78",royal:"#22408f",maroon:"#8a1f3c"};
+const TRAY=["black","blue","red","green","orange","purple"];
+const P=[
+ {id:"edulis",sub:"Go-to-market strategy",c:C.purple,lead:true,t:"Edulis Labs",logo:"img/ed-logo.png",notitle:1,short:"Edulis Labs",k:"Go-to-market strategy",yr:"2025 · venture-backed beauty-tech, San Francisco",tags:["Marketing","Research","Brand"],
+  img:"img/ed-logo.png",fit:1,
+  s:"Launching a high-performing bleach alternative (codenamed NovaBlonde) and biomimetic permanent hair color. I helped write the go-to-market playbook.",
+  b:[
+   {h:"The challenge",p:"Hair bleach hasn't fundamentally changed since the 1950s. It still burns, it still breaks hair, and stylists still treat damage as the price of going blonde. Edulis Labs invented a different path: a persulfate-free formula that only activates under near-infrared light, so oxidation happens where the pigment lives and not across the whole hair fiber. Incredible science. But stylists are skeptical, busy, and loyal to what works. My job was to figure out how to get them to trust something they'd never seen before."},
+   {label:"See the artifacts",btns:[["Jack's Findings (research deck)","ed-findings.html"],["Competitive analysis","ed-comp.html"],["Internship paper","ed-paper.html"],["Research repository","ed-repo.html"],["Team launch playbook","ed-leave.html"]]},
+   {h:"Starting with the data",p:"Before writing a single slogan, I built a catalog of every professional lightener and developer I could find across roughly twenty brands, from Wella, Schwarzkopf, Redken and L'Oréal to drugstore powders, logging price and size for each. Then I ran the numbers: cost versus size, line of best fit, and mean, median and mode for cost and cost per ounce."},
+   {img:"img/ed-chart-scatter.jpg",cap:"My analysis of the lightener market: price rises with size, not with any change in chemistry."},
+   {p:"The finding shaped everything after it. Lighteners averaged about $25 a tub and around $1.60 an ounce, with developers far cheaper, and the spread in price came down to size and packaging, not science. Premium brands charge more for sleeker tubs and \"bond-enriched\" claims built on the same 1950s oxidation. In other words, nobody in the category was actually competing on the thing customers hated most: damage."},
+   {img:"img/ed-chart-stats.jpg",cap:"Descriptive statistics for blonding products: cost and cost per ounce, developers vs. lighteners."},
+   {h:"Finding the empty corner",p:"I plotted the whole market on two axes, performance and hair quality. Two crowded clusters appeared: professional bleaches that work but damage hair (now sold with Olaplex or K18 bolted on to limit the harm), and sun-activated sprays that are gentle but barely lift. The top-right corner, high performance with no damage, was empty. That's where NovaBlonde belongs."},
+   {img:"img/ed-map.jpg",cap:"My positioning map of the blonding market. NovaBlonde sits alone in the high-performance, non-damaging corner."},
+   {h:"What stylists actually told us",p:"I synthesized stylist research from four design teams, plus my own convention and salon conversations, into five things stylists care about. I also ranked the nine biggest problems with bleach, and documented how stylists already work around damage: patch tests, going low and slow, mixing in Olaplex, or simply saying no to the client.",list:["<b>Minimal damage.</b> The #1 concern everywhere. One team's survey found 62.5% of stylists named it their top issue.","<b>Predictable results.</b> Reliable lift, no surprise undertones, compatible with their toners.","<b>Hands-on education.</b> Sales pitches get rejected. In-salon demos, try-it kits and peer-led masterclasses win.","<b>Peer validation.</b> Stylists trust who else is using a product, and how confidently.","<b>Client trust.</b> Their reputation and retention ride on how safe and excited the client feels."]},
+   {quote:"All roads lead back to education."},
+   {h:"The big idea: don't be a gentler bleach",p:"Every competitor was fighting to be the best bleach or the best repair serum. Olaplex didn't win by being a better bleach; it won by owning one phrase, \"bond building,\" until it became a whole category. So I argued NovaBlonde should own one idea of its own: <b>post-bleach</b>. Bleach becomes the anti-hero, and NovaBlonde isn't another version of it, it's the end of it."},
+   {quote:"NovaBlonde is not another form of bleach. It is the solution to bleach."},
+   {h:"Making the science easy to say",p:"Brands like K18 win by helping people understand the science, so I turned NovaBlonde's chemistry into two simple pictures a stylist could explain at the chair: bleach bulldozes open the cuticle to destroy melanin, while NovaBlonde uses light to target only the melanin and leaves the hair intact."},
+   {pair:[["img/ed-sci-bleach.jpg","How bleach works: it forces the cuticle open and destroys melanin through non-selective oxidation."],["img/ed-sci-nova.jpg","How NovaBlonde works: light targets only the melanin, so the hair stays healthy."]],wide:1},
+   {h:"Who we were really selling to",p:"I mapped the LA blonding market into six client archetypes, from the go-platinum-or-go-home \"Bellas\" to the low-maintenance balayage \"Maddies\" to the DIY box-dye \"Diannas,\" each with its own fears and its own message. But the real buyer is the stylist. Our persona \"Stephanie\" is self-reliant, skeptical, a kinesthetic learner, and fully booked. She won't read a brochure. She has to feel the difference in her own hands."},
+   {h:"The launch plan",list:["<b>Start in Los Angeles, one chair at a time.</b> Follow the Olaplex playbook: win a handful of elite salons whose stylists set the standard for everyone else, then let the technique spread. Salons add a single NovaBlonde chair and grow from there.","<b>Make education the product.</b> I designed a three-tier certification path (NB-1 Associate, NB-2 Certified Stylist, NB-3 Master Educator), modeled on how HydraFacial trains its buyers, so owning the device makes a stylist more valuable.","<b>Let the proof do the talking.</b> Microscope images of smooth NovaBlonde strands next to frayed bleached ones, plus \"feel tests\" with real hair bundles. I studied which booths actually pulled crowds at the Anaheim Beauty Convention and Cosmoprof Las Vegas, where I joined the CEO to meet formulators.","<b>Turn the service into an experience.</b> No ammonia smell means room for calming scent and sound, and the light device becomes a stage, glowing violet to champagne as the hair lightens."]},
+   {h:"Guerrilla marketing & brand concepts",p:"To make bleach the villain in public, I mocked up a billboard that puts \"your hair after bleach\" next to a dead, frayed palm tree, and a storefront concept built around one plain promise: healthy blonding."},
+   {img:"img/ed-billboard.jpg",cap:"Guerrilla billboard concept: \"Your hair after bleach\" vs. \"Your hair after NovaBlonde.\""},
+   {img:"img/ed-store.jpg",cap:"NovaBlonde storefront concept: healthy blonding."},
+   {img:"img/ed-pass.jpg",cap:"Concept work for the NovaBlonde Glam Van: an isometric layout of the mobile salon, and the \"Blonde Boarding Pass\" campaign."},
+   {h:"The Glam Van",p:"Elite colorists don't have time for trade shows, so I proposed bringing the salon to them: a fully fitted NovaBlonde van that runs house calls for celebrity clients, pops up as a shareable brand moment in Beverly Hills and Santa Monica, and drives right up to the busiest salons for live demos. I mapped a route across LA's top salons and got a real build quote from a custom trailer studio to test whether it was feasible."},
+   {h:"The team playbook",p:"Our team's final deliverable to Edulis was a go-to-market strategy and launch playbook. We weighed three ways to reach stylists: an LA pop-up, a beauty convention booth (we scouted Premiere Anaheim in person), and a mobile truck. We then priced out each option.",list:["<b>The pop-up</b> would have cost an estimated $25,900 to $50,550 for a one-time event, with unpredictable turnout from fully booked stylists.","<b>Conventions</b> were loud and sales-heavy, and stylists told us they hate being \"sold\" a new product.","<b>The truck</b> brings hands-on education straight to the salon and can run for months or years. We priced a smaller build at roughly $110,000, consulted a luxury creative studio on fabrication (5 to 7 months), and designed its \"desert minimalist chic\" look, plus the \"Spot the Edulis van\" and Blonde Boarding Pass / Golden Ticket campaigns."]},
+   {thesis:["Go-to-Market Strategy & Launch Playbook","Team Shock Absorbers · final deliverable · April 2025","Three launch concepts, a full cost breakdown, and the plan for the NovaBlonde truck.","ed-leave.html","ed-leave/p-01.jpg","Final deliverable","Read the playbook →"]},
+   {tall:1,img:"img/ed-demo.jpg",cap:"Live demo of the NovaBlonde mobile truck concept: a guest in the stylist's chair, with the treatment shown on screen beside her."},
+   {img:"img/ed-truck.jpg",cap:"Planning the van's route across LA salons, plus the social teaser campaign."},
+   {h:"Roses for salon owners",p:"To hear directly from the salons we wanted to win, I hand-delivered roses to salon owners. Each bouquet carried a NovaBlonde tag with a QR code linking to our survey."},
+   {pair:[["img/ed-q1.jpg","Out delivering roses to salon owners."],["img/ed-q2.jpg","Every stem tagged with a QR code to take our survey."]]},
+   {h:"Writing the words",p:"Working with David Freeman, a former Disney vice president, I wrote and tested more than 100 slogans and names for the technology. The shortlist stayed simple and easy for a stylist to say at the chair: <i>Blonding without the burn. Lightening with light. The post-bleach era.</i>"},
+   {h:"Testing it on myself, and new product ideas",p:"I'm a natural redhead, so I became a test subject. One treatment removed the brown pigments in my hair and left a strawberry blonde unique to my own base, something regular bleach can't do because it flattens everyone to the same yellow. That result led to three new product proposals: a <b>Redhead Revive</b> line to bring back red hair's natural brightness, <b>BlondeLab</b>, a consumer flagship for younger clients with virgin hair, and an at-home <b>BlondeLabs</b> kit with a light-activated headband for brow lightening."},
+   {pair:[["img/ed-blondelab.jpg","BlondeLab flagship concept: healthy highlights."],["img/ed-kit.jpg","BlondeLabs at-home kit with a light-activated headband."]]},
+   {img:"img/ed-redhead.jpg",cap:"Redhead Revive mock-up: a NovaBlonde line made for redheads."},
+   {h:"What I took away",p:"Great science doesn't sell itself. Launching something truly new means starting with the data, choosing one idea and saying it every time, finding the few people everyone else copies, and making the proof something you can see and touch."}
+  ]},
+ {id:"leopard",links:[["theleopardmark.com","https://theleopardmark.com/"],["cantinesca.com","https://cantinesca.com/"],["sunlightgroove.com","https://sunlightgroove.com/"]],sub:"Ops & brand",c:C.royal,logo:"img/tlm-logo.png",notitle:1,t:"The Leopard Mark",short:"Leopard Mark",k:"Operations software I designed & built",yr:"Aug – Nov 2026 · California craft brewery",tags:["Product","Ops","Brand"],
+  img:"img/tlm-cover.jpg",
+  s:"A young brewery that distributes its own beer across California, run on spreadsheets. I designed and built the system that runs it: one shared source of truth that powers an operations hub for the office, an app for sales reps in the field, and an app for delivery drivers.",
+  meta:[["Role","Operations; designed & built the software"],["When","August – November 2026"],["Users","The office, sales reps, delivery drivers"],["Connected to","Stripe, Google Sheets, VIP, state & federal reporting"]],
+  b:[
+   {h:"The problem",p:"Self-distributing beer means one order passes through a lot of hands. A rep signs a bar, someone checks its alcohol license, someone bills it, a driver loads the right kegs, and every barrel has to show up correctly in state and federal tax filings. At The Leopard Mark, all of that lived across spreadsheets, texts and memory. Every hand-off was a chance for something to fall through."},
+   {stats:[["3","connected apps, one database"],["32","accounts across LA & the Bay"],["366","prospect doors mapped for reps"],["3","tax & sales reports built automatically"]]},
+   {h:"1 · The Ops Hub",p:"The office's command center, and the engine behind everything. When an account places an order, the hub <b>sets off the whole supply chain automatically</b>: the order is approved and invoiced, inventory is reserved, the delivery is routed to a driver, and the paperwork is generated, so beer shows up at the customer's door with very little human hand-off. That alone saves countless hours every week."},
+   {list:["<b>Supply chain automation:</b> one order triggers billing, inventory, routing, bills of lading and records.","<b>Inventory and brews:</b> tracks every batch from the brewhouse to the warehouse to the bar.","<b>Distributors:</b> manages partner distributors and what they carry.","<b>CRM:</b> every account, contact, license and Stripe billing status in one place, with new accounts from reps waiting for license approval.","<b>Marketing library:</b> holds all the marketing materials reps can order and share.","<b>Documents and records:</b> stores the back-end database and documents, and generates records on demand.","<b>Global search:</b> find any account, order, invoice, bill of lading or lot number."]},
+   {img:"img/tlm-ops-accounts.jpg",cap:"The Ops Hub: CRM, inventory, brews, distributors, marketing, documents and records in one place."},
+   {p:"<b>Reports build themselves.</b> Compliance and partner reporting is generated live from the same data instead of being retyped into spreadsheets: California excise and TTB numbers, the federal Brewer's Report of Operations by quarter, and VIP's monthly retail sales files in their exact format. A readiness checklist shows what each report can rely on today, so nothing is estimated."},
+   {img:"img/tlm-ops-reports.jpg",cap:"Reports: excise, TTB and VIP filings built from the movement ledger, with a readiness check before anything is filed."},
+   {h:"2 · The Sales Rep App",p:"Built for reps on foot. From the home screen a rep can add a new account, place an order, order marketing materials (stickers, signage, glassware, merch), manage their accounts, or find prospects. Prospecting turns the territory into routes of doors worth knocking, tracks every door from not visited to signed, and syncs with the office. Ordering is tap-the-beer simple: pick the customer, tap Cantinesca or Sunlight Groove, choose formats and quantities, submit."},
+   {img:"img/tlm-rep.jpg",cap:"The rep app: home, prospecting routes, and placing an order."},
+   {h:"3 · The Driver App",p:"Drivers see their day as a route: how many stops, units and kegs, where to load, and a loading note like \"load kegs last-stop first.\" Each stop shows the receiving hours, door instructions, one-tap navigate and call, the bill of lading, and exactly what was left, so delivery records flow straight back into billing and the tax reports."},
+   {img:"img/tlm-driver.jpg",cap:"The driver app: today's route and a stop, with the bill of lading one tap away."},
+   {h:"Websites & branding",shots:{"The Leopard Mark":"img/site-tlm.jpg","Cantinesca":"img/site-cant.jpg","Sunlight Groove":"img/site-sun.jpg"},sites:[
+     ["The Leopard Mark","theleopardmark.com","https://theleopardmark.com/","#22408f","Brewery home: the leopard-crest heritage brand, featured beers, goods and an Instagram feed. \"Tradition without borders.\""],
+     ["Cantinesca","cantinesca.com","https://cantinesca.com/","#d6127e","A Mexican-style lager with a warm, pink-and-navy cantina world: the beer, La Tiendita merch, a beer finder and El Álbum."],
+     ["Sunlight Groove","sunlightgroove.com","https://sunlightgroove.com/","#7a3fb0","A modern California Common: the Bay Area-inspired Cali Copper Lager, with a sunny purple-and-gold, Golden Gate-drawn world."]]},
+   {h:"The brand side",p:"Outside the software, I contributed to can design, photography and content gathering, social media, and merchandise. I also connected the brand with vendors at Coachella and Stagecoach."}
+  ]},
+ {id:"supply",sub:"Merch & social",c:C.maroon,t:"CMC Supply Shop",short:"Supply Shop",k:"Merch design, events, casting & social",yr:"Claremont McKenna College",tags:["Brand","Marketing"],
+  img:"img/supply-vibe.jpg",
+  s:"The campus shop is where school spirit becomes something you can wear. I designed pieces for it, cast every photoshoot, made its Instagram content, and helped run the on-campus pop-ups where it all sells.",
+  links:[["Instagram @cmcsupplyshop","https://www.instagram.com/cmcsupplyshop/"],["Shop the store","https://www.cmcsupplyshop.com/cmc-apparel"]],
+  b:[
+   {tape:"img/supply-vibe.jpg"},
+   {h:"What I did",list:["<b>Designed select shirts</b> for the line, shown below.","<b>Cast every photoshoot</b>, for all of the shop's drops and not just my own designs.","<b>Ran the Instagram:</b> planned and made content for the feed.","<b>Helped run on-campus pop-ups</b> where we sold the merch."]},
+   {h:"On camera",p:"I also made and starred in content for the shop's Instagram. This one's a good look at my personality."},
+   {video:"img/supply-reel.mp4",poster:"img/supply-reel.jpg",tall:1},
+   {h:"Pieces I designed",shop:[
+     ["Claremont McKenna Foundry Crew","$60","foundry",3,"https://www.cmcsupplyshop.com/cmc-apparel/p/claremont-mckenna-foundry-crew"],
+     ["Vintage Stags Tee","$35","stags",4,"https://www.cmcsupplyshop.com/cmc-apparel/p/classic-stags-tee-1"],
+     ["Retro Unisex Ringer Tee","$33","ringer",5,"https://www.cmcsupplyshop.com/cmc-apparel/p/retro-unisex-ringer-tee"],
+     ["Love CMC Babydoll Tee","$36","babydoll",7,"https://www.cmcsupplyshop.com/cmc-apparel/p/cmc-heart-ribbed-babydoll-tee"],
+     ["Love CMC Hat","$25","hat",3,"https://www.cmcsupplyshop.com/cmc-apparel/p/cmc-heart-hat"]]}
+  ]},
+ {id:"sams",demo:true,sub:"Fleet ops software",c:C.olive,t:"S.A.M.S.",short:"S.A.M.S.",k:"Operations software I designed & built",yr:"Summer 2026 – present · Sage Outdoor Adventures, Colorado",tags:["Product","Ops"],
+  img:"img/sams-overview.jpg",
+  s:"Sage's whole fleet of side-by-sides, e-bikes, vans, buses, plows and heavy machinery lived in spreadsheets and Drive folders. I designed and built S.A.M.S., the Sage Asset Management System, so anyone can answer \"what's ready to go?\" at a glance.",
+  meta:[["Role","Solo: research, product design, build"],["When","Summer 2026 – present"],["Users","The mechanic, managers, river & tour guides"],["Inside","Live maps, QR tags, maintenance engine, AI assistant"]],
+  b:[
+   {h:"The problem",p:"I guide rivers for Sage, so I lived this one. Machine status was scattered across spreadsheets, photo folders and people's memories. The mechanic couldn't easily see what was overdue for service, and a guide grabbing a vehicle at 7am had no way to know it had been overheating the day before."},
+   {stats:[["61","machines tracked across 2 bases"],["2","modes: guide & manager"],["41","trails mapped, 67 waypoints"],["1","glance to know what's ready"]]},
+   {img:"img/sams-overview.jpg",cap:"The overview leads with one answer: how many machines are ready right now. Every unit is a tile colored ready, caution or down, and the problems are listed beside it."},
+   {h:"Two modes, two jobs",p:"Managers see everything. Guide mode strips it down to the one thing a guide needs: is this safe to take? A down vehicle shows a giant <b>Do Not Take</b> with the reason, plus one-tap buttons to open a work order or report a problem by voice."},
+   {img:"img/sams-guide.jpg",cap:"What a guide sees after scanning a vehicle that's down."},
+   {h:"A QR tag on every machine",p:"Every asset gets a printable QR tag. Scan it and you land on its live status page. Guides log each trip (who drove, which vehicles guests used, end-of-day hours and miles), so every machine's readings stay accurate and you always know who had it last. It works on a phone in the field."},
+   {img:"img/sams-phones.jpg",cap:"On the phone: overview, a vehicle's status, the daily maintenance report, and trip logging."},
+   {h:"Maintenance that runs on hours",p:"Services are tracked against real engine hours, so the daily report shows exactly what's overdue on each machine: oil, air filter, drive belt, brakes, spark plugs. The shop inventory tracks part numbers, which vehicles each part fits, shelf locations and low-stock flags."},
+   {img:"img/sams-inventory.jpg",cap:"Shop inventory: what's on the shelf, what it fits, and what to reorder."},
+   {h:"Maps of the whole operation",p:"The ranch base has a live trail map with property lines, 41 trails and 67 waypoints, and guides can add waypoints, draw new trails or flag trail issues. The river base maps 82.8 miles of the Upper Colorado, from Pumphouse to Two Rivers Park, and you can tap any put-in for live flows."},
+   {img:"img/sams-trails.jpg",cap:"The ranch trail map, built with guides who ride it every day."},
+   {h:"The Plan",p:"Managers build the next day's trips in one screen: pick the trip and guest count, auto-build the boats and vans, tap staff to assign them, and watch estimated revenue and margin update live. It warns you if a trip has no trip leader, and one button posts the plan to everyone."},
+   {img:"img/sams-plan.jpg",cap:"Building the day: boats, vans, buses and staff, with cost versus revenue in real time."},
+   {h:"SAGENT, and what's next",p:"An AI assistant, <b>SAGENT</b>, lives on every page for repair and parts questions. Next up: hardwired LTE trackers feeding a live map, so managers can watch every vehicle move across the ranch, plus booking and staffing syncs with FareHarbor and Square."},
+   {quote:"The best operations software answers the question you actually have at 7am, before you even ask it."}
+  ]},
+ {id:"pillpets",demo:true,sub:"Senior thesis",c:C.red,t:"PillPetz",short:"PillPetz",k:"Senior thesis · product, hardware & brand",yr:"Claremont McKenna · Spring 2026",tags:["Product","Hardware","Brand","Research"],
+  img:"img/pp-ux.jpg",
+  s:"A smarter pill case for kids. Every medication comes with a pixel-art pet that gets happy when the dose is taken, so a dreaded chore becomes looking after something you love.",
+  meta:[["Role","Solo: research, industrial design, electronics, UX/UI, brand, go-to-market"],["When","Senior thesis, Spring 2026"],["Advisor","Dr. Shannon Randolph, Sontag Center"],["Tools","Blender, Shapr3D, CadQuery, ESP32, Figma, pixel art, Claude Code"]],
+  b:[
+   {h:"The problem",p:"Every morning, a child is supposed to take their medicine. Often they don't. And the standard pill bottle was designed for dispensing safety and stopping accidental ingestion, not for a kid who has to use it every single day."},
+   {stats:[["1 in 5","new prescriptions are never filled (CDC)"],["50%","of filled prescriptions are taken incorrectly (WHO)"],["$300B","yearly U.S. cost of non-adherence"]]},
+   {h:"Why kids are different",list:["<b>Executive function is still developing</b>, so kids can't run complex routines without scaffolding.","<b>Stigma is real.</b> Being seen taking medication at school can feel devastating, and kids skip doses to avoid it.","<b>The ADHD paradox:</b> the medication that builds attention is the one most likely to be forgotten by a child who struggles with attention.","<b>The caregiver handoff problem:</b> when care is shared, no single adult knows for sure whether the dose was taken."]},
+   {h:"Research",p:"I dug into the history of the prescription bottle from 1850 to today, interviewed pediatric patients, caregivers, a pharmacist and a psychologist, and mapped the market. Smart dispensers (Hero, MOBI, EllieGrid) are clinical and built for adults. Pretty pill cases (Dosey, Cadence) are desirable but have no intelligence. Nothing was smart enough to support adherence and also designed emotionally for a child. That gap became the brief."},
+   {btns:[["Read the research paper","pillpetz-paper.html"],["Research repository","pillpetz-repository.html"]]},
+   {h:"Five design insights",list:["Adherence is an emotional problem, not a logistical one.","The product can't rely on the user's executive function.","Caregivers are users too, and their anxiety is a design problem.","Caring for a companion outlasts sticker charts.","It has to live in the child's world, not the medical world."]},
+   {h:"The concept",p:"In 1996, Tamagotchi got millions of kids to show up every day for a digital pet, not because they had to but because something they loved was waiting. PillPetz uses the same idea: one creature per medication. Opening the lid is detected automatically and the pet celebrates. A missed dose makes it gently hungry, never punished. Streaks help it grow and evolve, and caregivers get a quiet confirmation instead of alarms."},
+   {img:"img/pp-cad.jpg",cap:"Five prototype iterations (A–E): from a treasure chest to a two-compartment case with the screen on top, plus an oval weekly and a docking-station probe."},
+   {h:"Building it",p:"I went through five CAD iterations, each answering a new question. Prototype C hit the right scale with the screen first and became the build. Inside is a working electronics prototype: an ESP32 with a 3.2\" touchscreen, reed switches that detect each lid opening without a button, a buzzer for gentle reminders, and a LiPo battery with USB-C charging."},
+   {quote:"\"Does this function?\" was the threshold. \"Does this feel right?\" was the target."},
+   {img:"img/pp-chars1.jpg",cap:"The character library: pixel-art companions with full animation states (idle, happy, excited, sad, sleepy)."},
+   {img:"img/pp-chars2.jpg",cap:"More of the cast: MooMoo, Leo and MeowMeow."},
+   {h:"Two interfaces",p:"The device screen is for the child: the pet, the dose, the celebration. The companion app is for caregivers, with daily schedules, streaks, a multi-caregiver dashboard and insights across 12 screen states."},
+   {h:"What testing taught me",list:["Users understood the companion idea immediately.","<b>Confirming a dose mattered as much as the reminder.</b> \"Did I already take it?\" was the biggest worry.","Privacy was the main friction: playful at home, discreet in public. It needs a quiet mode for school.","Pets should get hungry or sleepy, never die or alarm."]},
+   {h:"Path to market",p:"A prescription-endorsed route through pediatric pharmacies and clinics, insurance partnerships (payers benefit when kids take their meds), direct-to-consumer, and longer-term toy licensing with companies like Spin Master or Mattel. Next steps: a final 3D-printed Prototype C, a pilot with 5–10 children, then a custom PCB and a clinical study."},
+   {thesis:["PillPetz: A Smarter Way to Encourage Medication Adherence in Children","Senior thesis · Claremont McKenna College · Sontag Center for Collaborative Creativity · Spring 2026","An 81-page exploration in product design, child development and adherence strategy: history, interviews, personas, market analysis, five CAD prototype cycles, electronics, UX and go-to-market.","pillpetz-thesis.html","thesis/p-01.jpg"]}
+  ]},
+ {id:"river",demo:true,sub:"App for river guides",c:C.teal,t:"RiverLog",short:"RiverLog",k:"Product for Colorado river guides",yr:"2026 · designed & built solo",tags:["Product","Brand"],
+  img:"img/river-dash.jpg",
+  s:"Colorado guides have to document their river hours to move up to trip leader and instructor, and most of us still do it in a soggy notebook. RiverLog makes logging a trip quick, makes the progress visible, and makes it a little bit fun.",
+  meta:[["Role","Solo: product, UX, visual design, build"],["Users","Guides, trip leaders and outfitters"],["Why it matters","Colorado's river outfitter licensing runs on logged hours"],["Highlights","Guided trip logger, milestones, PDF log sheets, admin view"]],
+  b:[
+   {h:"It started with my own notebook",p:"I kept my river log by hand: dates, rivers, miles and scribbled page totals. First I digitized it for myself. Then guides I work with needed the same thing, and I realized every guide in Colorado has this problem. Paper logs get lost, soaked and unreadable, right when you need them to prove you're ready for the next role."},
+   {img:"img/river-landing.jpg",cap:"RiverLog: Colorado on-river hour tracking for guides, trip leaders and outfitters."},
+   {h:"One question at a time",p:"Logging a trip is a guided flow, one question per screen: date, commercial or private, river, flow, put-in and take-out, miles, hours, boat type, your role, notes and photos, company and license number, then a review. It's simple enough to finish in the van on the drive back."},
+   {img:"img/river-flow.jpg",cap:"The trip logger on a phone: one decision per screen."},
+   {h:"Progress you can see",p:"The dashboard breaks your hours and miles down by role (guide, trip leader, guide instructor, private) and shows progress bars toward the Trip Leader and Guide Instructor milestones, so you always know how close you are."},
+   {img:"img/river-dash.jpg",cap:"The guide dashboard: milestones, totals and the hour breakdown."},
+   {h:"Paperwork in one tap",p:"Pick the trips you need and RiverLog generates a clean log sheet PDF with totals by role, ready to hand to an outfitter. Outfitters get an admin view of every guide's trips, hours and new entries, with one-click export."},
+   {img:"img/river-admin.jpg",cap:"Admin view for outfitters: every guide, every trip, exportable."},
+   {h:"A little reward",p:"Logging is a chore, so every saved trip plays a random celebration: confetti, a wave crash, a raft ride, a splash, a trip stamp, or an octopus who tells you \"Good job!\" It's the same lesson as PillPetz: people keep up habits that feel good."},
+   {img:"img/river-celebrate.jpg",cap:"Celebrations: one plays at random every time you log a trip."},
+   {p:"<i>Screens show demo data.</i>"}
+  ]},
+ {id:"cooper",links:[["See the 2019 winners at Cooper Hewitt","https://www.cooperhewitt.org/2019-design-competition/"]],sub:"Biomimicry challenge winner",c:C.black,t:"Trabecula Motorcycle Helmet",short:"Cooper-Hewitt Award",k:"Cooper-Hewitt, Smithsonian Design Museum",yr:"Biomimicry challenge winner",tags:["Product","Research"],
+  img:"img/helmet-sketch.jpg",
+  s:"A motorcycle helmet that borrows the woodpecker's secret. My 3D-printable design won the Cooper-Hewitt, Smithsonian Design Museum's biomimicry innovation challenge.",
+  b:[
+   {model:true},
+   {h:"The insight",p:"A woodpecker slams its head into wood thousands of times a day without hurting itself. Part of the answer is <b>trabecula</b>, the spongy, cross-braced structure of cancellous bone that cushions its brain. Instead of one hard layer, it's a web of tiny struts that share and absorb the force."},
+   {h:"The design",p:"I translated that structure into a 3D-printable motorcycle helmet. The outer shell is printed in layers that follow the trabecula pattern, so an impact gets spread across a lattice of struts instead of landing in one spot. More layers mean more shock absorption and better overall protection."},
+   {tape:"img/helmet-sketch.jpg",wide:true},
+   {p:"<i>My original pencil sketch, digitized above.</i>"}
+  ]},
+ {id:"pz",sub:"Co-President",c:C.purple,t:"PZ Threads",short:"PZ Threads",k:"Co-President, 5C fashion club & magazine",yr:"Claremont Colleges",tags:["Brand","Marketing"],
+  img:"img/pz-2223.jpg",
+  s:"A student fashion club and magazine across the Claremont Colleges, dedicated to sustainable fashion. As Co-President I helped organize two on-campus fashion shows with student designers and models.",
+  links:[["pzthreads.wixsite.com","https://pzthreads.wixsite.com/pzthreads"],["@pzthreads","https://www.instagram.com/pzthreads/"]],
+  meta:[["Role","Co-President"],["Club","5C student fashion club & magazine, founded fall 2019"],["Focus","Sustainable fashion, student designers, campus culture"]],
+  b:[
+   {h:"What PZ Threads is",p:"PZ Threads is a fashion club and magazine run by students from across the 5Cs. It's built on the idea that clothing can change how people see themselves, and that fashion can be more than a business: it can help shift people from fast fashion toward sustainable fashion and spark better conversations on campus."},
+   {h:"What I did",list:["Served as Co-President of the club.","Organized two on-campus fashion shows, working with student designers and models."]},
+   {img:"img/pz-2223.jpg",cap:"Fall 2022 – Spring 2023 issue: A Retrospective, with lookbooks from the red carpet, runway and fashion show film."},
+   {img:"img/pz-2122.jpg",cap:"Fall 2021 – Spring 2022 issue: The New Consumer, covering greenwashing, rap and modern fashion, and shopping sustainably."},
+   {img:"img/pz-s21.jpg",cap:"Spring 2021 issue: Fashion Through the Decades."},
+   {h:"The magazine",p:"Issues have covered sustainable fashion and student designers (Spring 2020), a quarantine collection (Fall 2020), fashion through the decades (Spring 2021), the new consumer (2021–22) and a retrospective (2022–23). Read them all at <a href=\"https://pzthreads.wixsite.com/pzthreads\" target=\"_blank\" rel=\"noopener\">pzthreads.wixsite.com</a>."}
+  ]},
+ {id:"film",sub:"Actor",c:C.purple,t:"Nothing More Permanent Than the Temporary",short:"Short film",k:"Acting",yr:"Short film",tags:[],
+  img:"img/nmptt-poster.jpg",
+  s:"A scene from the short film Nothing More Permanent Than the Temporary, in which I act.",
+  b:[{video:"img/nmptt.mp4",poster:"img/nmptt-poster.jpg"}]},
+ {id:"chromis",img:"img/chromis-poster.jpg",sub:"Biomimicry wearable",c:C.blue,t:"Chromis Band",short:"Chromis Band",k:"Biomimicry wearable",yr:"Nature-Inspired Solution Design · Pomona College · Spring 2026",tags:["Product","Research","Hardware"],
+  s:"A screenless wristband for kids with ADHD and autism. It shows how they're feeling through color that shifts like a hummingbird's throat, with no dye and no screen.",
+  meta:[["Role","Solo: research, concept, prototyping, interactive web build"],["When","Spring 2026"],["Biological models","Anna's hummingbird + Morpho butterfly"],["Tools","Arduino, heart-rate sensing, HTML/JS, FigJam"]],
+  link:["Play with the live iridescence prototype","https://jbegley25-oss.github.io/hummingbird-iridescence"],
+  b:[
+   {loop:"img/chromis.mp4",poster:"img/chromis-poster.jpg",cap:"Structural color in action: the surface shifts from green to magenta as the angle changes. No dye, no screen."},
+   {band:"Try the Chromis Band"},
+   {h:"The problem",p:"Kids with ADHD and autism often struggle to recognize their own emotional state before it boils over. The tools they get are abstract, verbal or stuck on a screen, and none of them are cool to wear."},
+   {stats:[["1 in 6","children have neurodevelopmental differences"],["70%","of kids with ADHD struggle with emotional self-regulation"]]},
+   {h:"What nature already solved",p:"The Anna's hummingbird and the Morpho butterfly make brilliant color without any pigment. Tiny nanostructures bend light, and the color shifts with the viewing angle. The hummingbird flashes its throat from dull to brilliant to signal what it's feeling. That's communication through light, with no words and no screen."},
+   {h:"Three prototypes, one pivot",list:["<b>01 · Chromis Band.</b> A wristband with an iridescent structural-color surface driven by a heart-rate sensor: cool blue and green at rest, warm violet and magenta when heart rate climbs. It's always on and passive.","<b>02 · Teacher Glasses.</b> Structural-color frames that flash when a teacher faces the class, borrowing the hummingbird's attention-grabbing flash. Feedback showed this was the wrong scale: it captured attention but didn't help kids regulate themselves, so I moved back to the individual wearer.","<b>03 · Interactive Iridescence.</b> A browser simulation of angle-dependent structural color, so anyone can feel how it works on their phone."]},
+   {quote:"Nature already solved this. The Chromis Band borrows the hummingbird's language and gives it to the kids who need it most."},
+   {h:"What I learned",p:"The pivot was the most valuable part. A design can work exactly as intended and still miss the real need. Teacher glasses grabbed attention, but the deeper problem was self-regulation, and that belongs to the kid."}
+  ]},
+ {id:"truck",sub:"Service design",c:C.green,t:"Green Jobs Truck",short:"Green Jobs Truck",k:"Service design for GRID Alternatives",yr:"Design for Environmental Behavior Change · Spring 2025",tags:["Research","Product","Marketing"],
+  img:"img/grid-logo.png",fit:1,
+  s:"A one-stop mobile hub that brings solar job training, applications and second-chance resources straight to job seekers who can't easily get to them.",
+  meta:[["Partner","GRID Alternatives, a solar nonprofit"],["Team","Team of 5 designers"],["When","Spring 2025, alongside my GRID outreach & strategy internship"],["Methods","Field research, interviews, personas, systems mapping, street testing"]],
+  b:[
+   {h:"The brief",p:"GRID Alternatives runs a free hands-on solar installation training program that leads to real green-energy jobs, and it welcomes formerly incarcerated people. But the people who'd benefit most often never hear about it, or can't get there."},
+   {h:"Going into the field",p:"We toured GRID's downtown LA training center, spent a day at an expungement clinic in Compton, and interviewed trainees, job seekers and community partners. We heard from a man who commutes over an hour on the Metro and an electric skateboard to get to class, and someone recently released after 12 years who was anxious about what came next. Their stories became three personas: <b>Job-Seeking Joe</b>, <b>Resilient Ruby</b> and <b>Second-Chance Sam</b>."},
+   {h:"100+ ideas → 3 prototypes",list:["<b>Micro-influencers:</b> trusted community members trained to recruit and dispel myths, paid with stipends.","<b>A gamified training app</b> with levels, streaks and certificates for people breaking in with no experience.","<b>The One-Stop Job Truck:</b> if people can't get to GRID, GRID goes to them, with sign-ups, applications, expungement help, a headshot station and free business attire."]},
+   {img:"img/gr-truck.jpg",cap:"Inside the Green Jobs Truck: sign-ups, applications and second-chance resources in one place."},
+   {img:"img/gr-route.jpg",cap:"Planning the truck's first route through Pomona using EPA environmental-justice data."},
+   {h:"Testing it on the street",p:"We taped a big yellow sign onto a teammate's car and parked outside a community center in downtown Pomona. At first people kept their distance. The lesson was trust: the truck needed real branding and <b>shame-free messaging</b>. It should lift people up, not remind them of where they stand. We designed a logo and color scheme, built a sign-up website, and turned our final presentation into an immersive walkthrough, with an audience member as the job seeker."},
+   {h:"Outcome",p:"GRID told us they were already working on a mobile unit of their own. We handed over recommendations to make it work: fixed monthly routes set by community interest forms, a website for scheduling, and volunteers to keep costs down."}
+  ]},
+ {id:"runway",sub:"3D world building",c:C.orange,t:"Lost Sea of Atlantis",short:"Fashion Show",k:"3D world building",yr:"Digital World Building · Claremont McKenna · Spring 2026",tags:["3D","Brand"],
+  img:"img/at-1.jpg",
+  s:"A surreal three-act fashion show in Blender: models walk out of sunken Atlantis, descend into a boiler-room hell, and rise into heaven. Every piece of geometry was coded in Python.",
+  meta:[["Role","Solo: concept, environment design, Python scripting, camera, edit"],["When","Spring 2026"],["Influences","James Turrell's light installations, Versace runway spectacle"],["Tools","Blender, Python, Eevee, Blender video editor"]],
+  b:[
+   {h:"The idea",p:"Fashion shows are rituals of spectacle, luxury and light. I wanted to build a world where the runway itself tells a story, moving through three environments that each change what the clothes feel like."},
+   {img:"img/at-1.jpg",cap:"Act 1, Sunken Atlantis: broken Greek columns, a sand floor, teal light beams and a figure-8 runway for glowing ghost models."},
+   {img:"img/at-2.jpg",cap:"Act 2, the Boiler Room: glossy black floor, red neon strips, silhouette audience figures."},
+   {img:"img/at-3.jpg",cap:"Act 3, Heaven: a white-and-gold runway floating on clouds, individual gold chairs, golden-hour light."},
+   {h:"Directing with code",p:"I built every environment from native Blender primitives using Python, then choreographed the camera in code: a full 360° orbit, a spiral descent toward the runway, then a glide down its length that ends tilting into the floor. I tuned Eevee rendering to run on a laptop and cut the final film in Blender's video editor."},
+   {h:"The runway runs in the family",p:"Fashion shows aren't new to me. As co-president of PZThreads, the 5C fashion club, I helped organize two on-campus shows with student designers and models, including a custom soundtrack album made for the runway."}
+  ]}
+];
+const MORE=[
+];
+const PROC=[
+ {t:"Listen",c:C.red,p:"Surveys, interviews, focus groups. Find out what people actually need.",svg:'<path d="M40 70c0-30 22-48 46-48s40 18 40 40c0 18-14 24-14 38 0 14-10 24-24 24" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M62 70c0-14 10-24 24-24s22 10 22 20" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round"/>'},
+ {t:"Sketch",c:C.blue,p:"Get it on the board fast. Ugly first, then better.",svg:'<path d="M30 110l70-70 18 18-70 70H30z" stroke="currentColor" stroke-width="6" fill="none" stroke-linejoin="round"/><path d="M90 50l18 18" stroke="currentColor" stroke-width="6"/><path d="M22 140c30-10 60 8 110-4" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/>'},
+ {t:"Build",c:C.green,p:"CAD, circuits, code. A prototype answers what a deck can't.",svg:'<rect x="30" y="40" width="90" height="80" rx="8" stroke="currentColor" stroke-width="6" fill="none"/><path d="M50 40V24M75 40V24M100 40V24M50 120v16M75 120v16M100 120v16" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="75" cy="80" r="14" stroke="currentColor" stroke-width="6" fill="none"/>'},
+ {t:"Tell it",c:C.purple,p:"Positioning, messaging, the pitch. Make the value obvious.",svg:'<path d="M28 60h26l50-28v96L54 100H28z" stroke="currentColor" stroke-width="6" fill="none" stroke-linejoin="round"/><path d="M118 56c10 10 10 38 0 48M130 44c18 18 18 54 0 72" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/>'}
+];
+const TOOLS=[["Branding & Strategy",C.purple,["Brand Strategy","Brand Identity","Creative Direction","Positioning","Go-to-Market","Marketing Strategy"]],["Research & Experience",C.red,["User Research","Human-Centered Design","Consumer Insights","Experience Design","Survey Design","Storytelling"]],["Product & Technology",C.green,["Product Development","Rapid Prototyping","Industrial Design","AI Workflows","Automation","3D Printing","ESP32 / Arduino"]],["Tools",C.blue,["Figma","Blender","Python","HTML / CSS / JS","Claude & Claude Code","Adobe Creative Suite"]]];
+const MOREN={c:C.black,short:"+ more",k:"Film, fashion & socials",t:"More"};
+const GROUPS=[{id:"sage",c:C.olive,short:"Sage Outdoor Adventures",sub:"Fleet software + RiverLog app",ids:["sams","river"],blurb:"Two products I designed and built while guiding rivers for Sage."},
+ {id:"design",c:C.red,short:"Design Projects",sub:"Product, biomimicry, service & 3D",ids:["pillpets","chromis","truck","runway","cooper"],blurb:"Product, biomimicry, service and 3D design work from my Human-Centered Design studies."}];
+const SOCN={c:C.teal,short:"Socials",sub:"Instagram & LinkedIn",k:"Instagram & LinkedIn",t:"Socials"};
+const SOC=[{id:"s-ig",c:C.purple,short:"Instagram",sub:"@jackxbegley",url:"https://www.instagram.com/jackxbegley"},{id:"s-li",c:C.blue,short:"LinkedIn",sub:"Jack Begley",url:"https://www.linkedin.com/in/jack-begley-b09552330/"}];
+const isGrp=id=>GROUPS.some(g=>g.id===id)||id==="more"||id==="socials";
+const node=id=>P.find(q=>q.id===id)||GROUPS.find(g=>g.id===id)||(id==="socials"?SOCN:MOREN);
+const NODES=[["edulis",190,105],["leopard",500,48],["supply",810,105],["sage",765,525],["design",235,525],["more",500,600]];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+
+/* hero letters in rotating marker colors */
+const hc=[C.red,C.blue,C.green,C.orange,C.purple,C.black];
+let ci=0;
+$("#hi").innerHTML="Hi, I'm Jack.".split("").map(ch=>ch===" "?" ":`<span class="l" aria-hidden="true" style="color:${hc[(ci++)%6]}">${esc(ch)}</span>`).join("");
+
+/* wobbly ring path */
+const ring=(cx,cy,rx,ry,seed)=>{let d="",n=14;for(let i=0;i<=n+2;i++){const a=i/n*Math.PI*2+seed,j=1+Math.sin(i*2.3+seed*5)*.06;const x=cx+Math.cos(a)*rx*j,y=cy+Math.sin(a)*ry*j;d+=(i?" L":"M")+x.toFixed(1)+" "+y.toFixed(1)}return d};
+const svg=$("#mapsvg"),still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const MSHORT={"Cooper-Hewitt, Smithsonian Design Museum":"Cooper-Hewitt Award","Lexus Eco Challenge":"Lexus Eco Challenge"};
+const moreKids=MORE.map((m,i)=>({id:"m"+i,c:m.c,short:MSHORT[m.t]||m.t,sub:m.k.split(" · ")[0].replace(/,.*$/,""),more:i}));
+const LAYOUT={2:[[500,72],[500,560]],4:[[215,120],[785,120],[215,500],[785,500]],5:[[500,50],[830,135],[780,548],[220,548],[170,135]],6:[[190,105],[500,48],[810,105],[765,525],[235,525],[500,600]]};
+const defs=`<defs>${Object.entries(C).map(([n,v])=>`<marker id="h-${n}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="none" stroke="${v}" stroke-width="2" stroke-linecap="round"/></marker>`).join("")}</defs>`;
+/* one level of the map: a center bubble and its branches */
+function level(center,items){
+  const cx=500,cy=300,fs=center.fs||50,rx=Math.max(150,center.label.length*fs*.33+40),ry=78;let o="";
+  items.forEach((p,i)=>{const [x,y]=p.pos,cn=Object.keys(C).find(k=>C[k]===p.c)||"black";
+    const dx=x-cx,dy=(y-6)-cy,ts=1.1/Math.hypot(dx/rx,dy/ry),hw=Math.max(p.short.length*10,(p.sub||"").length*5.4)+18,hh=50,te=Math.min(hw/Math.abs(dx||1e-6),hh/Math.abs(dy||1e-6),.6);
+    const sx=cx+dx*ts,sy=cy+dy*ts,ex=x-dx*te,ey=(y-6)-dy*te,mx=(sx+ex)/2+(i%2?36:-36),my=(sy+ey)/2+(i%2?-26:26);
+    o+=`<path class="arr" style="stroke:${p.c}" data-d="${center.slow?.62+i*.2:.15+i*.12}" marker-end="url(#h-${cn})" d="M${sx.toFixed(1)} ${sy.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}"/>`});
+  o+=`<a class="hub${center.back?" back":" me"}" tabindex="0" aria-label="${center.back?"Back to the main map":"About Jack"}"><path class="ring${center.slow?" drawin":""}" pathLength="1" d="${ring(cx,cy,rx,ry,.3)}" stroke="${center.c}"/><text x="${cx}" y="${cy+fs*.32}" text-anchor="middle" style="font:400 ${fs}px 'Permanent Marker',cursive" fill="${center.c}">${esc(center.label)}</text></a>`;
+  items.forEach((p,i)=>{const [x,y]=p.pos;
+    if(center.slow)o+=`<g class="spark" style="--dl:${(.92+i*.2+.1).toFixed(2)}s">${[0,1,2,3,4,5].map(k=>{const a=k/6*Math.PI*2+i;return`<circle cx="${x}" cy="${y-10}" r="${k%2?2.5:3.5}" fill="${p.c}" style="--sx:${(Math.cos(a)*70).toFixed(0)}px;--sy:${(Math.sin(a)*40).toFixed(0)}px"/>`}).join("")}</g>`;
+    o+=`<a class="node${center.slow?" pop":""}" style="--dl:${center.slow?.92+i*.2:0}s;--tx:${((500-x)*.35).toFixed(0)}px;--ty:${((300-y)*.35).toFixed(0)}px" data-id="${p.id}" tabindex="0" aria-label="${esc(p.short)}"><g><text x="${x}" y="${y}" text-anchor="middle" fill="${p.c}">${esc(p.short)}</text><text class="sub" x="${x}" y="${y+30}" text-anchor="middle">${esc(p.sub||"")}</text></g></a>`});
+  return o}
+function drawArrows(root){root.querySelectorAll(".arr").forEach(a=>{if(still)return;const L=a.getTotalLength()+2,t0=performance.now()+a.dataset.d*1000;a.setAttribute("stroke-dasharray",L);a.setAttribute("stroke-dashoffset",L);a.style.opacity=0;const mk=a.getAttribute("marker-end");a.removeAttribute("marker-end");
+  const f=t=>{const k=Math.min(1,Math.max(0,(t-t0)/520)),e=k<.5?4*k*k*k:1-(-2*k+2)**3/2;a.style.opacity=k>0?1:0;a.setAttribute("stroke-dashoffset",L*(1-e));if(k>.88&&mk&&!a.hasAttribute("marker-end"))a.setAttribute("marker-end",mk);if(k<1)requestAnimationFrame(f);else a.removeAttribute("stroke-dasharray")};requestAnimationFrame(f)})}
+const top=NODES.map(([id,x,y])=>{const p=node(id);return{id,c:p.c,short:p.short,sub:p.sub||p.k.split(" · ")[0],pos:[x,y]}});
+function kidsOf(id){
+  if(id==="socials")return SOC.map(x=>({...x}));
+  if(id==="more")return[...["film","pz"].map(i=>{const f=P.find(p=>p.id===i);return{id:i,c:f.c,short:f.short,sub:f.sub}}),{id:"socials",c:SOCN.c,short:"Socials",sub:SOCN.sub},...moreKids]
+  const g=GROUPS.find(g=>g.id===id);return g.ids.map(i=>{const p=P.find(q=>q.id===i);return{id:p.id,c:p.c,short:p.short,sub:p.sub}})}
+let cur0=null,busy=false;
+function show(id,from){
+  if(busy)return;busy=true;
+  const old=svg.querySelector(".lvl");const isTop=!id;
+  const pos=from||[500,300];
+  const build=()=>{
+    let html;
+    if(isTop){html=level({label:"JACK",c:C.black,slow:SLOW},top);SLOW=false}
+    else{const p=node(id)===MOREN?{c:C.black,short:"+ more"}:node(id);const kids=kidsOf(id);const L=LAYOUT[kids.length]||LAYOUT[5];kids.forEach((k,i)=>k.pos=L[i%L.length]);
+      html=level({label:id==="more"?"More":id==="socials"?"Socials":p.short,c:p.c,fs:id==="sage"?34:44,back:true},kids)}
+    const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("class","lvl in"+(isTop&&html.includes("drawin")?" slowin":""));g.innerHTML=html;
+    g.style.transformOrigin=isTop?`${pos[0]}px ${pos[1]}px`:"500px 300px";
+    svg.appendChild(g);requestAnimationFrame(()=>requestAnimationFrame(()=>g.classList.remove("in")));drawArrows(g);
+    $("#mapback").hidden=isTop;cur0=id;busy=false;
+    $("#maphint").textContent=isTop?"click a bubble to zoom in · click JACK to meet me":"click a project to open it · or tap the center to zoom back out";
+  };
+  if(old){old.style.transformOrigin=`${pos[0]}px ${pos[1]}px`;old.classList.add(isTop?"shrink":"zoom");setTimeout(()=>{old.remove();build()},still?0:380)}else build();
+}
+svg.innerHTML=defs;let SLOW=false;
+function pick(id,el){
+  {const so=SOC.find(x=>x.id===id);if(so){window.open(so.url,"_blank","noopener");return}}
+  if(isGrp(id)){const t=el&&el.querySelector("text");show(id,t?[+t.getAttribute("x"),+t.getAttribute("y")]:null);return}
+  const mk=moreKids.find(k=>k.id===id);
+  if(mk){const c=document.querySelectorAll(".mcard")[mk.more];tab("work");document.getElementById("more").scrollIntoView({behavior:"smooth"});if(c){c.classList.remove("flash");void c.offsetWidth;c.classList.add("flash")}return}
+  if(P.some(p=>p.id===id))openP(id,true)}
+const back=()=>{if(cur0==="socials"){show("more",null);return}if(cur0){const n=NODES.find(([i])=>i===cur0);show(null,n?[n[1],n[2]]:null)}};
+svg.addEventListener("click",e=>{const a=e.target.closest(".node");if(a){e.preventDefault();pick(a.dataset.id,a);return}if(e.target.closest(".hub.back"))back();else if(e.target.closest(".hub.me"))goAbout()});
+svg.addEventListener("keydown",e=>{if(e.key!=="Enter"&&e.key!==" ")return;const a=e.target.closest(".node");if(a){e.preventDefault();pick(a.dataset.id,a)}else if(e.target.closest(".hub.back")){e.preventDefault();back()}else if(e.target.closest(".hub.me")){e.preventDefault();goAbout()}});
+$("#mapback").onclick=back;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&cur0&&!dlg.open)back()});
+/* phone: the same two levels as a list */
+function mlist(id){const items=id?kidsOf(id):top;
+  $("#mlist").innerHTML=(id?`<li><button type="button" data-back="${id==="socials"?"more":"1"}" style="color:var(--soft)">← back</button></li>`:"")+items.map(p=>`<li><button type="button" data-id="${p.id}" style="color:${p.c}">${esc(p.short)}</button></li>`).join("")}
+mlist(null);
+$("#mlist").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.back)return mlist(b.dataset.back==="more"?"more":null);const id=b.dataset.id;if(isGrp(id))mlist(id);else pick(id)});
+
+
+/* board reveal + tabs */
+const mapEl=$("#map"),hintEl=$("#maphint");let revealed=false;
+mapEl.classList.add("pre");hintEl.style.visibility="hidden";
+function revealMap(){if(revealed)return;revealed=true;$("#reveal").classList.add("gone");mapEl.classList.remove("pre");SLOW=!still;show(null);setTimeout(()=>{hintEl.style.visibility="";hintEl.classList.add("fadein")},still?0:2300)}
+$("#reveal").onclick=revealMap;
+function tab(t){if(!["board","work","about"].includes(t))t="board";document.querySelectorAll(".pane").forEach(p=>p.hidden=p.id!=="pane-"+t);
+ document.querySelectorAll(".links a").forEach(a=>a.setAttribute("aria-current",a.dataset.tab===t?"page":"false"));scrollTo(0,0);try{sizeInk()}catch(_){}}
+document.querySelectorAll(".links a,.logo").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const t=a.dataset.tab||"board";try{history.replaceState(null,"","#"+t)}catch(_){}tab(t)}));
+{const h0=location.hash.slice(1);tab(["work","about"].includes(h0)?h0:"board")}
+
+function goAbout(){try{history.replaceState(null,"","#about")}catch(_){}tab("about")}
+/* cards + filters */
+const rot=[-1.2,.9,-.6,1.3,-1,.7];
+let ri=0;const card=p=>`<button type="button" class="card${p.lead?" lead":""}" data-id="${p.id}" data-tags="${p.tags.join(",")}" style="--c:${p.c};--r:${rot[(ri++)%6]}deg">${p.img?`<img class="thumb${p.fit?" fit":""}" src="${p.img}" alt="" loading="lazy">`:""}<span class="k">${esc(p.k)}</span><h3>${esc(p.t)}</h3><p>${esc(p.s)}</p><span class="yr">${esc(p.yr)}</span><span class="more">read the case study</span></button>`;
+const EXTRA=["film","pz"];const grouped=[...GROUPS.flatMap(g=>g.ids),...EXTRA];
+$("#grid").innerHTML=`<div class="grid">${P.filter(p=>!grouped.includes(p.id)).map(card).join("")}</div>`+GROUPS.map(g=>`<section class="gsec" id="g-${g.id}" style="--c:${g.c}"><div class="ghead"><h3>${esc(g.short)}</h3><p>${esc(g.blurb)}</p></div><div class="grid">${g.ids.map(id=>card(P.find(p=>p.id===id))).join("")}</div></section>`).join("");
+$("#grid").addEventListener("click",e=>{const b=e.target.closest(".card");if(b)openP(b.dataset.id)});
+const tags=["All",...new Set(P.flatMap(p=>p.tags))];
+$("#filters").innerHTML=tags.map((t,i)=>`<button type="button" class="chip" aria-pressed="${i===0}" data-t="${t}">${t}</button>`).join("");
+$("#filters").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;
+  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c===b));
+  document.querySelectorAll(".card").forEach(c=>{c.hidden=!(b.dataset.t==="All"||c.dataset.tags.split(",").includes(b.dataset.t))});document.querySelectorAll(".gsec").forEach(g=>{g.hidden=!g.querySelector(".card:not([hidden])")});sizeInk()});
+
+$("#proc").innerHTML=PROC.map(s=>`<div class="step" style="color:${s.c}"><svg viewBox="0 0 150 150" aria-hidden="true">${s.svg}</svg><h3>${s.t}</h3><p style="color:var(--ink)">${s.p}</p></div>`).join("");
+$("#mgrid").innerHTML=`<button type="button" class="mcard filmcard" data-open="film" style="--c:${C.purple}"><img src="img/nmptt-poster.jpg" alt=""><div class="k">Short film · actor</div><h3>Nothing More Permanent Than the Temporary</h3><p>Watch the scene →</p></button><button type="button" class="mcard filmcard" data-open="pz" style="--c:${C.purple}"><img src="img/pz-2223.jpg" alt=""><div class="k">Co-President · 5C fashion club</div><h3>PZ Threads</h3><p>See the magazine →</p></button>`+MORE.map(m=>`<div class="mcard" style="--c:${m.c}"><div class="k">${esc(m.k)}</div><h3>${esc(m.t)}</h3><p>${esc(m.p)}</p></div>`).join("");
+$("#mgrid").addEventListener("click",e=>{const b=e.target.closest("[data-open]");if(b)openP(b.dataset.open)});
+$("#tools").innerHTML=TOOLS.map(([h,c,xs])=>`<div class="sk"><h4 class="mk" style="color:${c}">${esc(h)}</h4><ul class="tools">${xs.map(t=>`<li style="--t:${c}">${esc(t)}</li>`).join("")}</ul></div>`).join("");
+$("#contactrow").innerHTML=CONTACT.map(c=>`<a class="cta" href="${esc(c.href)}" target="_blank" rel="noopener">${esc(c.label)}</a>`).join("");
+
+/* digitized helmet sketch (interactive SVG) */
+const SKNOTES={
+ printable:["3D printable","The whole helmet is designed to be 3D printed, so the trabecula pattern can be built straight into the shell, layer by layer."],
+ trabecula:["Trabecula","Trabecula is the cross-braced structure that makes up cancellous (spongy) bone. Woodpeckers have it around their brains: a web of tiny struts that shares the force of every strike."],
+ shell:["Layered outer shell","The outer shell is a 3D-printed material that follows the same design as the trabecula. Its multiple layers add shock absorption and help with overall protection."],
+ woodpecker:["The woodpecker","A woodpecker hammers wood thousands of times a day. The trabecula bone around its brain absorbs the shock. That's the idea this helmet borrows."]};
+let SK=null;
+function destroySketch(){if(SK){cancelAnimationFrame(SK.raf);SK=null}}
+
+function sketchSVG(){
+ const helmet="M190,470 C160,350 195,205 325,160 C465,112 640,165 690,295 C716,368 712,440 690,500 L650,528 C520,548 330,544 215,512 Z";
+ const visor="M335,298 C405,268 565,262 652,278 C682,330 670,392 640,422 C560,437 420,432 352,417 C332,380 328,340 335,298 Z";
+ return`<svg viewBox="0 0 1000 640" class="sksvg" role="img" aria-label="Digitized sketch of the Trabecula Motorcycle Helmet">
+ <defs><clipPath id="skHel"><path d="${helmet}"/></clipPath><clipPath id="skMag"><circle cx="300" cy="335" r="52"/></clipPath><clipPath id="skBand"><path d="M748,505 A52,46 0 0 1 735,455 L752,448 A35,30 0 0 0 762,492 Z"/></clipPath></defs>
+ <g class="skt"><text x="40" y="64" class="skTitle">Trabecula Motorcycle Helmet</text><path d="M40,78 C200,72 400,82 560,74" class="skU"/></g>
+ <g id="skLatAll" clip-path="url(#skHel)" class="skLat"></g>
+ <path d="${helmet}" class="skHelmet" id="skHelPath"/>
+ <path d="M215,512 C330,544 520,548 650,528 L655,545 C520,566 320,562 210,530 Z" class="skTrim"/>
+ <path d="M168,390 L205,384 L210,430 L176,438 Z M172,446 L210,440 L214,470 L182,476 Z" class="skVent"/>
+ <path d="${visor}" class="skVisor" id="skVisor"/>
+ <path d="M372,312 C440,292 540,290 610,298" class="skGlint"/><path d="M362,330 C420,316 470,314 520,316" class="skGlint"/>
+ <path d="M600,470 C640,462 670,455 688,450 M590,488 C635,482 668,476 690,470" class="skLine"/>
+ <path d="M440,220 C470,240 500,262 520,280" class="skLine"/>
+ <g class="hs" data-k="shell" tabindex="0"><rect x="620" y="118" width="64" height="82" rx="4" class="skSwatch"/><g id="skSwatchRows"></g><path d="M620,170 L560,215" class="skLeader"/><circle cx="700" cy="112" r="13" class="skNum"/><text x="700" y="117" class="skNumT">3</text>
+  <text class="skNote" x="700" y="148"><tspan x="700">The outer shell of</tspan><tspan x="700" dy="24">the helmet is a</tspan><tspan x="700" dy="24">3D printed material</tspan><tspan x="700" dy="24">that follows the</tspan><tspan x="700" dy="24">trabecula design.</tspan></text></g>
+ <g class="hs" data-k="printable" tabindex="0"><path d="M150,300 C200,305 230,318 250,328" class="skLeader"/><circle cx="40" cy="262" r="13" class="skNum"/><text x="40" y="267" class="skNumT">1</text><text class="skNote" x="60" y="268"><tspan x="60">This design is</tspan><tspan x="60" dy="24">3D printable</tspan></text></g>
+ <g class="hs" data-k="trabecula" tabindex="0"><circle cx="300" cy="335" r="52" class="skMagBg"/><g id="skLatMag" clip-path="url(#skMag)" class="skLat on"></g><circle cx="300" cy="335" r="52" class="skMag"/><path d="M300,387 L300,560" class="skLeader"/><circle cx="60" cy="572" r="13" class="skNum"/><text x="60" y="577" class="skNumT">2</text>
+  <text class="skNote" x="84" y="578"><tspan x="84">Trabecula, the structure that makes up</tspan><tspan x="84" dy="24">cancellous bone. Found in woodpeckers</tspan><tspan x="84" dy="24">to protect their brains.</tspan></text></g>
+ <g class="hs" data-k="woodpecker" tabindex="0" transform="translate(-15,15)"><path d="M736,560 C700,520 705,455 760,438 C808,425 850,452 852,492 C900,505 950,520 985,545 C930,545 880,540 845,530 C835,552 800,570 770,572 L758,600 L748,566 Z" class="skBird"/>
+  <ellipse cx="772" cy="482" rx="26" ry="20" class="skBrain"/><text x="772" y="487" class="skTiny">brain</text>
+  <g clip-path="url(#skBand)" id="skLatBird" class="skLat on"></g><path d="M748,505 A52,46 0 0 1 735,455" class="skBandEdge"/>
+  <circle cx="862" cy="406" r="13" class="skNum"/><text x="862" y="411" class="skNumT">4</text><text class="skNote sm" x="880" y="412"><tspan x="880">Trabecula, the</tspan><tspan x="880" dy="20">shock-absorbing</tspan><tspan x="880" dy="20">bone around its brain</tspan></text>
+  <text x="870" y="612" class="skBirdT">The Woodpecker</text></g>
+ <g id="skRipples"></g></svg>`}
+function initSketch(box){
+ destroySketch();const svg=box.querySelector(".sksvg"),NS="http://www.w3.org/2000/svg",hel=svg.querySelector("#skHelPath"),vis=svg.querySelector("#skVisor");
+ /* lattice generator */
+ function lattice(g,n,inside,maxD){const P=[];let guard=0;while(P.length<n&&guard++<n*40){const p=inside.rand();if(inside.test(p))P.push(p)}
+  const E=[],seen=new Set();P.forEach((p,i)=>{P.map((q,j)=>[Math.hypot(p[0]-q[0],p[1]-q[1]),j]).filter(([d,j])=>j!==i&&d<maxD).sort((a,b)=>a[0]-b[0]).slice(0,3).forEach(([d,j])=>{const k=i<j?i+"-"+j:j+"-"+i;if(!seen.has(k)){seen.add(k);E.push([i,j])}})});
+  g.innerHTML=E.map(([i,j])=>`<line x1="${P[i][0].toFixed(1)}" y1="${P[i][1].toFixed(1)}" x2="${P[j][0].toFixed(1)}" y2="${P[j][1].toFixed(1)}"/>`).join("")+P.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.2"/>`).join("");
+  return E.map(([i,j])=>[(P[i][0]+P[j][0])/2,(P[i][1]+P[j][1])/2])}
+ const pt=svg.createSVGPoint();const inPath=(el,x,y)=>{pt.x=x;pt.y=y;try{return el.isPointInFill(pt)}catch(e){return false}};
+ const mids=lattice(svg.querySelector("#skLatAll"),340,{rand:()=>[160+Math.random()*560,110+Math.random()*440],test:([x,y])=>inPath(hel,x,y)&&!inPath(vis,x,y)},62);
+ lattice(svg.querySelector("#skLatMag"),46,{rand:()=>[248+Math.random()*104,283+Math.random()*104],test:([x,y])=>Math.hypot(x-300,y-335)<56},26);
+ lattice(svg.querySelector("#skLatBird"),26,{rand:()=>[728+Math.random()*40,440+Math.random()*72],test:()=>true},20);
+ svg.querySelector("#skSwatchRows").innerHTML=[0,1,2,3].map(r=>`<path d="M626,${136+r*18} q8,-6 16,0 t16,0 t16,0" class="skRow"/>`).join("");
+ const lines=[...svg.querySelectorAll("#skLatAll line")];
+ /* notes */
+ const cap=box.querySelector(".skcap");
+ function note(k){svg.querySelectorAll(".hs").forEach(h=>h.classList.toggle("dim",!!k&&h.dataset.k!==k));svg.querySelectorAll(".hs").forEach(h=>h.classList.toggle("act",h.dataset.k===k));
+  cap.innerHTML=k?`<b>${SKNOTES[k][0]}.</b> ${SKNOTES[k][1]}`:"Tap a numbered note to read it, or click the helmet to test an impact."}
+ note(null);SK={raf:0,run:false};
+ svg.addEventListener("click",e=>{const h=e.target.closest(".hs");if(h){note(h.classList.contains("act")?null:h.dataset.k);return}
+  {const r0=svg.getBoundingClientRect(),X=(e.clientX-r0.left)/r0.width*1000,Y=(e.clientY-r0.top)/r0.height*640;if(!inPath(hel,X,Y))return;const r=svg.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*1000,y=(e.clientY-r.top)/r.height*640;impact(x,y)}});
+ svg.addEventListener("keydown",e=>{const h=e.target.closest(".hs");if(h&&(e.key==="Enter"||e.key===" ")){e.preventDefault();note(h.classList.contains("act")?null:h.dataset.k)}});
+ const tog=box.querySelector(".sktog");tog.onclick=()=>{const on=tog.getAttribute("aria-pressed")!=="true";tog.setAttribute("aria-pressed",on);svg.querySelector("#skLatAll").classList.toggle("on",on)};
+ /* impact ripple */
+ const still=matchMedia("(prefers-reduced-motion: reduce)").matches;let hit=null;
+ function impact(x,y){svg.querySelector("#skLatAll").classList.add("on");tog.setAttribute("aria-pressed","true");
+  const d=mids.map(([mx,my])=>Math.hypot(mx-x,my-y));hit={t:performance.now(),x,y,d};
+  box.querySelector(".skread").textContent=`Impact spread across ${d.filter(v=>v<260).length} struts`;
+  const rp=svg.querySelector("#skRipples");rp.innerHTML=[0,1,2].map(i=>`<circle cx="${x}" cy="${y}" r="4" class="skRing" style="animation-delay:${i*.18}s"/>`).join("");
+  if(SK&&!SK.run){SK.run=true;loop()}}
+ function loop(){SK.raf=requestAnimationFrame(t=>{if(!SK)return;if(hit){const k=(t-hit.t)/1000,w=k*420;
+   lines.forEach((l,i)=>{const dd=hit.d[i],a=Math.min(1,Math.exp(-((dd-w)**2)/1800)*Math.exp(-dd/320)*1.6+(dd<40?Math.max(0,1-k):0));l.style.stroke=a>.05?`rgb(${Math.round(31+(239-31)*a)},${Math.round(95+(116-95)*a)},${Math.round(209+(9-209)*a)})`:"";l.style.strokeWidth=a>.05?(1.6+a*1.6)+"px":""});
+   if(k>1.6){hit=null;lines.forEach(l=>{l.style.stroke="";l.style.strokeWidth=""})}}
+   if(hit)loop();else if(SK)SK.run=false})}
+}
+/* Chromis band simulator (rebuilt from the April prototype) */
+let BAND=null;
+function destroyBand(){if(BAND){cancelAnimationFrame(BAND.raf);BAND=null}}
+const BSTATES=[{n:"Calm",sub:"Resting: cool teal iridescence",col:"Teal to green",ar:"Low",ang:"+2°",c:["#1D9E75","#5DCAA5","#9FE1CB"],hr:62},
+ {n:"Focused",sub:"Engaged: cool blue shimmer",col:"Blue to cyan",ar:"Moderate",ang:"+8°",c:["#185FA5","#378ADD","#85B7EB"],hr:88},
+ {n:"Excited",sub:"Elevated: warm magenta shift",col:"Pink to magenta",ar:"High",ang:"+18°",c:["#993556","#D4537E","#ED93B1"],hr:112},
+ {n:"Overwhelmed",sub:"High arousal: deep coral red",col:"Coral to red",ar:"Very high",ang:"+28°",c:["#993C1D","#D85A30","#F0997B"],hr:148}];
+function bandHTML(){return`<div class="bandsim"><canvas width="960" height="300" aria-label="Chromis Band simulator"></canvas>
+ <div class="bs-state"><b class="bs-name">Calm</b><span class="bs-sub"></span></div>
+ <label class="bs-hr"><span>Heart rate</span><input type="range" min="45" max="155" value="62" step="1"><output>62 bpm</output></label>
+ <div class="bs-sw">${BSTATES.map((s,i)=>`<button type="button" data-hr="${s.hr}" style="--sc:${s.c[1]}"><i></i>${s.n}</button>`).join("")}</div>
+ <div class="bs-d"><div><span>Color mode</span><b class="bd-c"></b></div><div><span>Arousal</span><b class="bd-a"></b></div><div><span>Tile angle</span><b class="bd-g"></b></div></div></div>`}
+function initBand(box){destroyBand();const cv=box.querySelector("canvas"),x=cv.getContext("2d"),rg=box.querySelector("input"),out=box.querySelector("output");
+ const idx=h=>h<75?0:h<100?1:h<128?2:3;
+ const hx=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)),mix=(a,b,t)=>{const A=hx(a),B=hx(b);return`rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(",")})`};
+ const BR=[[45,75],[75,100],[100,128],[128,155]];
+ function cols(h){const i=idx(h);if(i===3)return BSTATES[3].c;const t=Math.max(0,(h-BR[i][0])/(BR[i][1]-BR[i][0])-.55)/.45;return BSTATES[i].c.map((c,k)=>mix(c,BSTATES[i+1].c[k],Math.min(1,t)))}
+ function ui(h){const s=BSTATES[idx(h)];out.textContent=h+" bpm";box.querySelector(".bs-name").textContent=s.n;box.querySelector(".bs-name").style.color=s.c[1];box.querySelector(".bs-sub").textContent=s.sub;
+  box.querySelector(".bd-c").textContent=s.col;box.querySelector(".bd-a").textContent=s.ar;box.querySelector(".bd-g").textContent=s.ang;box.querySelectorAll(".bs-sw button").forEach((b,i)=>b.classList.toggle("on",i===idx(h)))}
+ rg.oninput=()=>ui(+rg.value);box.querySelectorAll(".bs-sw button").forEach(b=>b.onclick=()=>{rg.value=b.dataset.hr;ui(+rg.value)});ui(62);
+ let t=0;BAND={raf:0};const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ function draw(){const h=+rg.value,[c1,c2,c3]=cols(h);t+=still?0:(h/60)*.045;const W=960,H=300;x.clearRect(0,0,W,H);
+  const bx=110,by=95,bw=740,bh=110,r=55;
+  x.fillStyle="#9a9aa2";x.beginPath();x.roundRect(bx-50,by+30,60,50,[14,0,0,14]);x.fill();x.beginPath();x.roundRect(bx+bw-10,by+30,60,50,[0,14,14,0]);x.fill();
+  const g=x.createLinearGradient(bx,by,bx+bw,by+bh);g.addColorStop(0,c1);g.addColorStop(.5,c2);g.addColorStop(1,c1);x.fillStyle=g;x.beginPath();x.roundRect(bx,by,bw,bh,r);x.fill();
+  x.save();x.beginPath();x.roundRect(bx,by,bw,bh,r);x.clip();
+  const n=12,tw=(bw-60)/n;for(let i=0;i<n;i++){const tx=bx+30+i*tw,ph=Math.sin(t*2+i*.6)*.5+.5;const tg=x.createLinearGradient(tx,by,tx+tw,by+bh);tg.addColorStop(0,c2);tg.addColorStop(ph*.8+.1,c3);tg.addColorStop(1,c1);x.fillStyle=tg;x.globalAlpha=.85;x.beginPath();x.roundRect(tx+4,by+18,tw-8,bh-36,8);x.fill()}
+  x.globalAlpha=1;const sx=bx+((t*120)%(bw+300))-150,sh=x.createLinearGradient(sx,0,sx+150,0);sh.addColorStop(0,"rgba(255,255,255,0)");sh.addColorStop(.5,"rgba(255,255,255,.55)");sh.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=sh;x.fillRect(bx,by,bw,bh);x.restore();
+  const p=Math.sin(t*2*Math.PI/1.6)*.5+.5;x.strokeStyle=c2;x.lineWidth=3+p*4;x.globalAlpha=.35+p*.4;x.beginPath();x.roundRect(bx-6,by-6,bw+12,bh+12,r+6);x.stroke();x.globalAlpha=1;
+  BAND&&(BAND.raf=requestAnimationFrame(draw))}
+ BAND.raf=requestAnimationFrame(draw)}
+/* modal */
+const dlg=$("#dlg");let cur=0;
+function block(x){
+  if(x.stats)return`<div class="stats">${x.stats.map(([n,l])=>`<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join("")}</div>`;
+  if(x.pair)return`<div class="pair${x.wide?" wide":""}">${x.pair.map(([u,c])=>`<figure><img src="${u}" alt="${esc(c)}" loading="lazy"><figcaption>${esc(c)}</figcaption></figure>`).join("")}</div>`;
+  if(x.img)return`<figure${x.tall?' class="tall"':""}><img src="${x.img}" alt="${esc(x.cap)}" loading="lazy">${x.cap?`<figcaption>${esc(x.cap)}</figcaption>`:""}</figure>`;
+  if(x.shop)return`${x.h?`<h4>${esc(x.h)}</h4>`:""}<div class="shop">${x.shop.map(([n,pr,k,c,u])=>`<div class="item"><div class="car"><div class="trk">${Array.from({length:c},(_,i)=>`<img src="img/supply-${k}-${i+1}.jpg" alt="${esc(n)}, photo ${i+1} of ${c}" loading="lazy">`).join("")}</div>${c>1?`<button type="button" class="cb prev" aria-label="Previous photo">‹</button><button type="button" class="cb next" aria-label="Next photo">›</button><div class="dots">${Array.from({length:c},(_,i)=>`<i${i?"":" class=on"}></i>`).join("")}</div>`:""}</div><a class="nm" href="${u}" target="_blank" rel="noopener">${esc(n)}</a><span class="pr">${pr}<a href="${u}" target="_blank" rel="noopener">Shop it →</a></span></div>`).join("")}</div>`;
+  if(x.sites)return`<h4>${esc(x.h)}</h4><div class="sites">${x.sites.map(([n,d,u,c,t])=>`<a class="site" href="${u}" target="_blank" rel="noopener" style="--sc:${c}">${x.shots&&x.shots[n]?`<img src="${x.shots[n]}" alt="">`:`<span class="sbar"><i></i><i></i><i></i><em>${esc(d)}</em></span><span class="swm">${esc(n)}</span>`}<span class="sdesc">${esc(t)}</span><span class="sgo">Visit ${esc(d)} →</span></a>`).join("")}</div>`;
+  if(x.model)return`<div class="skbox"><div class="h3bar"><button type="button" class="h3mode sktog" aria-pressed="false">Show the trabecula</button><span class="h3read skread" aria-live="polite"></span></div>${sketchSVG()}<p class="h3cap skcap" aria-live="polite"></p></div>`;
+  if(x.thesis)return`<a class="thesis" href="${x.thesis[3]}" target="_blank" rel="noopener"><img src="${x.thesis[4]}" alt="Cover"><span><em>${x.thesis[5]||"Notable"}</em><b>${esc(x.thesis[0])}</b><small>${esc(x.thesis[1])}</small><span>${esc(x.thesis[2])}</span><i>${x.thesis[6]||"Read the senior thesis →"}</i></span></a>`;
+  if(x.btns)return`${x.label?`<div class="blabel">${esc(x.label)}</div>`:""}<div class="rbtns">${x.btns.map(([t,u])=>`<a class="cta small" href="${u}" target="_blank" rel="noopener">${esc(t)} →</a>`).join("")}</div>`;
+  if(x.band)return`<h4>${esc(x.band)}</h4><p>Drag the heart rate or tap a state to watch the band shift color.</p>${bandHTML()}`;
+  if(x.loop)return`<figure class="vid"><video src="${x.loop}" poster="${x.poster||""}" autoplay muted loop playsinline></video>${x.cap?`<figcaption>${esc(x.cap)}</figcaption>`:""}</figure>`;
+  if(x.video)return`<figure class="vid${x.tall?" vtall":""}"><video src="${x.video}" poster="${x.poster||""}" controls playsinline preload="metadata"></video></figure>`;
+  if(x.tape)return`<figure class="tape${x.wide?" wide":""}"><img src="${x.tape}" alt="" loading="lazy"></figure>`;
+  if(x.quote)return`<blockquote>${esc(x.quote)}</blockquote>`;
+  return`${x.h?`<h4>${esc(x.h)}</h4>`:""}${x.p?`<p>${x.p}</p>`:""}${x.list?`<ul>${x.list.map(l=>`<li>${l}</li>`).join("")}</ul>`:""}`}
+const SUM={
+ pz:{img:"img/pz-2122.jpg",h:"A 5C fashion club and magazine built around sustainable fashion",pts:["Co-President of the Claremont Colleges student fashion club","Organized two on-campus fashion shows with student designers and models","Magazine issues on sustainability, fashion history and the new consumer"]},
+ edulis:{gal:["img/ed-demo.jpg","img/ed-store.jpg","img/ed-blondelab.jpg"],img:"img/ed-demo.jpg",h:"Launching a high-performing bleach alternative (codenamed NovaBlonde)",pts:["Analyzed the entire bleach market and found the one thing nobody was competing on: damage","Positioned NovaBlonde as \"post-bleach,\" a brand-new category instead of a gentler bleach","Built and demoed the NovaBlonde truck, plus salon, billboard and product concepts to bring it to stylists"]},
+ leopard:{gal:["img/tlm-ops-accounts.jpg","img/tlm-picnic.jpg"],img:"img/tlm-ops-accounts.jpg",h:"The software that runs a self-distributing contract brewery",pts:["Designed and built AI revenue agents that manage the supply chain end to end: inventory, production, distribution, marketing, reporting and CRM","Gave our sales reps an app that finds, prospects and manages their accounts for them, completely automated","One push of a button gets beer delivered, invoiced and tax-reported, anywhere"]},
+ supply:{gal:["img/supply-pv5.jpg","img/supply-pv4.jpg","img/supply-pv1.jpg","img/supply-pv2.jpg","img/supply-pv3.jpg"],img:"img/supply-foundry-1.jpg",h:"Merch, casting and content for the CMC campus shop",pts:["Designed pieces in the line, from the Foundry Crew to the Love CMC set","Cast every photoshoot and made the shop's Instagram content","Helped run on-campus pop-ups"]},
+ sams:{img:"img/sams-overview.jpg",h:"One glance tells Sage what's ready to go",pts:["Replaced spreadsheets with a live board for 61 machines across two bases","Guide mode shows a giant \"Do Not Take\" when something's down","QR tags, hour-based maintenance, trail maps and an AI repair assistant"]},
+ river:{img:"img/river-dash.jpg",h:"A trip log for Colorado river guides",pts:["Started from my own soggy paper notebook","Log a trip in one question per screen, then watch progress toward Trip Leader","One-tap PDF log sheets, an outfitter admin view, and a celebration every save"]},
+ pillpets:{img:"img/pp-ux.jpg",h:"A pill case that turns medicine into caring for a pet",pts:["Senior thesis tackling kids' medication adherence, a $300B problem","Five CAD prototypes and a working ESP32 touchscreen build","Pixel-art companions that celebrate every dose and get sleepy when one's missed"]},
+ chromis:{img:"img/chromis-poster.jpg",loop:"img/chromis.mp4",h:"A screenless wristband that shows emotion through color",pts:["Inspired by the hummingbird's color-shifting throat","Built for kids with ADHD and autism who need a cue for their own state","Three prototypes and a pivot that found the real need: self-regulation"]},
+ truck:{img:"img/gr-truck.jpg",h:"Bringing solar job training to the people who need it",pts:["Field research with GRID Alternatives trainees and job seekers","100+ ideas narrowed to a one-stop mobile job truck","Street-tested in Pomona and redesigned around shame-free messaging"]},
+ runway:{img:"img/at-1.jpg",h:"A three-act fashion show, built entirely in code",pts:["Sunken Atlantis, a boiler-room hell and a runway in the clouds","Every piece of geometry made with Blender Python","A choreographed camera: orbit, spiral descent, runway glide"]},
+ cooper:{img:"img/helmet-sketch.jpg",h:"A helmet that borrows the woodpecker's secret",pts:["Winner of the Cooper-Hewitt, Smithsonian Design Museum's biomimicry challenge","Trabecula, the spongy bone around a woodpecker's brain, spreads impact across tiny struts","A 3D-printable shell built in that pattern, now an interactive drawing"]}};
+let PREV=false;
+function fill(i,prev){cur=(i+P.length)%P.length;const p=P[cur];PREV=!!(prev&&SUM[p.id]);$("#sheet").classList.toggle("preview",PREV);
+  $("#sheet").style.setProperty("--c",p.c);$("#dk").textContent=p.k+" · "+p.yr;const lo=$("#dlogo");lo.hidden=!p.logo;if(p.logo){lo.src=p.logo;lo.alt=p.t+" logo"}$("#dt").textContent=p.t;$("#dt").hidden=!!p.notitle;$("#sheet").classList.toggle("notitle",!!p.notitle);$("#ds").textContent=p.s;
+  $("#dm").style.display=p.meta?"":"none";$("#dm").innerHTML=(p.meta||[]).map(([a,b])=>`<div><dt>${esc(a)}</dt><dd>${esc(b)}</dd></div>`).join("");
+  $("#dlink").innerHTML=(p.links?p.links.map(([t,u])=>`<a class="cta small" href="${u}" target="_blank" rel="noopener">${esc(t)} →</a> `).join(""):"")+(p.link?`<a class="cta small" href="${p.link[1]}" target="_blank" rel="noopener">${esc(p.link[0])} →</a> `:"")+(p.demo?`<a class="demo" href="mailto:jacksjpeg@gmail.com?subject=${encodeURIComponent("Live demo: "+p.t)}">Live demo available on request</a>`:"");
+  destroySketch();if(PREV){const m=SUM[p.id];$("#dm").style.display="none";$("#dlink").innerHTML="";$("#ds").textContent=m.h;
+    $("#db").innerHTML=`${m.gal?`<div class="pvgal">${m.gal.map(u=>`<img src="${u}" alt="">`).join("")}</div>`:m.loop?`<figure class="pvimg"><video src="${m.loop}" autoplay muted loop playsinline style="width:100%;max-height:34vh;object-fit:cover;border-radius:10px;display:block"></video></figure>`:m.img?`<figure class="pvimg"><img src="${m.img}" alt=""></figure>`:""}<ul class="pvpts">${m.pts.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><button type="button" class="readmore" id="readmore">Read the full case study →</button>`;
+    destroyBand();$("#readmore").onclick=()=>{tab("work");fill(cur,false);setP()};$("#sheet").scrollTop=0;return}
+  destroyBand();$("#db").innerHTML=p.b.map(block).join("");{const bb=$("#db .bandsim");if(bb)initBand(bb)}$("#sheet").scrollTop=0;{const hb=$("#db .skbox");if(hb)requestAnimationFrame(()=>{if(hb.isConnected)initSketch(hb)})}
+  try{history.replaceState(null,"","#"+p.id)}catch(e){}}
+const sh=$("#sheet");let leaving=false;
+function setP(){sh.style.setProperty("--p",Math.min(1,sh.scrollTop/260).toFixed(3))}
+function openP(id,prev){fill(P.findIndex(p=>p.id===id),prev);setP();if(!dlg.open){sh.classList.add("drag","enter");try{dlg.showModal()}catch(e){dlg.setAttribute("open","")}void sh.offsetWidth;sh.classList.remove("drag");requestAnimationFrame(()=>sh.classList.remove("enter"))}}
+function closeP(){if(!dlg.open||leaving)return;leaving=true;sh.classList.add("leave");setTimeout(()=>{dlg.close();sh.classList.remove("leave");sh.style.setProperty("--pull","0px");leaving=false},430)}
+sh.addEventListener("scroll",setP,{passive:true});
+/* pull down at the top to drop the card away */
+let pull=0,pt0=null,pullT;
+function pullTo(v){pull=Math.max(0,v);sh.style.setProperty("--pull",pull+"px");if(pull>140)closeP()}
+sh.addEventListener("wheel",e=>{if(sh.scrollTop>0||e.deltaY>=0){if(pull){pullTo(0)}return}e.preventDefault();sh.classList.add("drag");pullTo(pull-e.deltaY*.6);clearTimeout(pullT);pullT=setTimeout(()=>{sh.classList.remove("drag");if(!leaving)pullTo(0)},160)},{passive:false});
+sh.addEventListener("touchstart",e=>{pt0=sh.scrollTop<=0?e.touches[0].clientY:null},{passive:true});
+sh.addEventListener("touchmove",e=>{if(pt0===null)return;const d=e.touches[0].clientY-pt0;if(d>0&&sh.scrollTop<=0){e.preventDefault();sh.classList.add("drag");pullTo(d*.7)}},{passive:false});
+sh.addEventListener("touchend",()=>{if(pt0===null)return;pt0=null;sh.classList.remove("drag");if(!leaving)pullTo(0)});
+$("#x").onclick=closeP;$("#prev").onclick=()=>fill(cur-1);$("#next").onclick=()=>fill(cur+1);
+dlg.addEventListener("cancel",e=>{e.preventDefault();closeP()});
+dlg.addEventListener("click",e=>{if(e.target===dlg)return closeP();const b=e.target.closest(".cb");if(b){const t=b.parentElement.querySelector(".trk");t.scrollBy({left:(b.classList.contains("next")?1:-1)*t.clientWidth,behavior:"smooth"})}});
+$("#db").addEventListener("scroll",e=>{const t=e.target;if(!t.classList||!t.classList.contains("trk"))return;const i=Math.round(t.scrollLeft/t.clientWidth);t.parentElement.querySelectorAll(".dots i").forEach((d,j)=>d.classList.toggle("on",j===i))},true);
+dlg.addEventListener("close",()=>{destroySketch();destroyBand();dlg.querySelectorAll("video").forEach(v=>v.pause());try{history.replaceState(null,"","#work")}catch(e){}});
+document.addEventListener("keydown",e=>{if(!dlg.open)return;if(e.key==="ArrowRight")fill(cur+1);if(e.key==="ArrowLeft")fill(cur-1)});
+const h=location.hash.slice(1);if(P.some(p=>p.id===h))setTimeout(()=>openP(h),300);
+
+/* doodle layer */
+const cv=$("#ink"),ctx=cv.getContext("2d");let strokes=[],pen=null,live=null;
+function sizeInk(){const d=devicePixelRatio||1,w=document.documentElement.scrollWidth,ht=document.body.scrollHeight;cv.style.width=w+"px";cv.style.height=ht+"px";cv.width=w*d;cv.height=ht*d;ctx.setTransform(d,0,0,d,0,0);redraw()}
+function line(s){if(s.pts.length<2)return;ctx.strokeStyle=s.c;ctx.globalAlpha=.88;ctx.lineWidth=6;ctx.lineCap=ctx.lineJoin="round";ctx.beginPath();ctx.moveTo(s.pts[0][0],s.pts[0][1]);for(let i=1;i<s.pts.length-1;i++){const a=s.pts[i],b=s.pts[i+1];ctx.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2)}const l=s.pts[s.pts.length-1];ctx.lineTo(l[0],l[1]);ctx.stroke();ctx.globalAlpha=1}
+function redraw(){ctx.clearRect(0,0,cv.width,cv.height);strokes.forEach(line)}
+const pt=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
+/* drag = draw, tap/click = normal click, so nav, filters and cards keep working with a marker uncapped */
+let start=null,dragged=false;
+document.addEventListener("pointerdown",e=>{if(!pen||e.button>0||e.target.closest("nav,dialog,.toast"))return;start={x:e.clientX,y:e.clientY,p:pt(e)};dragged=false});
+document.addEventListener("pointermove",e=>{if(!start)return;
+  if(!live){if(Math.hypot(e.clientX-start.x,e.clientY-start.y)<6)return;live={c:pen,pts:[start.p]};strokes.push(live);dragged=true}
+  e.preventDefault();live.pts.push(pt(e));redraw()},{passive:false});
+const end=()=>{start=null;live=null};
+document.addEventListener("pointerup",end);document.addEventListener("pointercancel",end);
+document.addEventListener("click",e=>{if(dragged){e.preventDefault();e.stopPropagation();dragged=false}},true);
+const caps=$("#caps");
+caps.innerHTML=TRAY.map(n=>[n,C[n]]).map(([n,v])=>`<button type="button" class="cap" data-c="${v}" aria-pressed="false" aria-label="${n} marker" style="background:${v}"></button>`).join("");
+const toast=$("#toast");let tt;const say=m=>{toast.textContent=m;toast.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove("on"),2200)};
+caps.addEventListener("click",e=>{const b=e.target.closest(".cap");if(!b)return;const on=pen!==b.dataset.c;pen=on?b.dataset.c:null;
+  caps.querySelectorAll(".cap").forEach(c=>c.setAttribute("aria-pressed",on&&c===b));document.body.classList.toggle("doodling",!!pen);
+  say(pen?"Marker uncapped. Drag to draw, click like normal. Tap it again to stop.":"Marker capped.")});
+$("#clear").onclick=()=>{strokes=[];redraw();say("Board wiped clean.")};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&pen&&!dlg.open){pen=null;document.body.classList.remove("doodling");caps.querySelectorAll(".cap").forEach(c=>c.setAttribute("aria-pressed","false"))}});
+new ResizeObserver(sizeInk).observe(document.body);
+if(document.fonts)document.fonts.ready.then(sizeInk);
+}
+</script>
+</body>
+</html>
