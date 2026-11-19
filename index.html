@@ -34,7 +34,7 @@ nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-f
 .cap:hover{transform:scale(1.15)}
 .cap[aria-pressed=true]{box-shadow:0 0 0 3px var(--ink);transform:scale(1.15)}
 .tbtn{font:700 15px Kalam,cursive;border:0;background:none;cursor:pointer;padding:6px 8px;color:var(--ink);border-radius:8px}
-.tbtn:hover{background:#e6e6ea}
+.tbtn:hover{background:#e6e6ea}.tbtn{white-space:nowrap}.tbtn:disabled{opacity:.35;cursor:default;background:none}
 button:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 /* hero */
 .hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(16px,3vw,40px);align-items:start;padding-top:clamp(24px,4vw,48px)}
@@ -275,10 +275,11 @@ body.doodling{cursor:crosshair;user-select:none;-webkit-user-select:none}body.do
 </script>
 <nav><div class="nav">
   <a class="logo mk" href="#top">Jack B.</a>
-  <div class="links" role="tablist"><a href="#board" data-tab="board">Board</a><a href="#work" data-tab="work">Work</a><a href="#about" data-tab="about">About</a></div>
+  <div class="links" role="tablist"><a href="#board" data-tab="board">Board</a><a href="#about" data-tab="about">About me</a></div>
   <div class="tray" role="group" aria-label="Doodle on the page">
     <span>grab a marker:</span>
     <div id="caps" style="display:flex;gap:6px"></div>
+    <button class="tbtn" id="undo" type="button" aria-label="Undo" title="Undo (⌘Z)" disabled>undo</button><button class="tbtn" id="redo" type="button" aria-label="Redo" title="Redo (⇧⌘Z)" disabled>redo</button>
     <button class="tbtn" id="clear" type="button">wipe</button>
   </div>
 </div></nav>
@@ -844,16 +845,17 @@ document.addEventListener("keydown",e=>{if(!dlg.open)return;if(e.key==="ArrowRig
 const h=location.hash.slice(1);if(P.some(p=>p.id===h))setTimeout(()=>openP(h),300);
 
 /* doodle layer */
-const cv=$("#ink"),ctx=cv.getContext("2d");let strokes=[],pen=null,live=null;
-function sizeInk(){const d=devicePixelRatio||1,w=document.documentElement.scrollWidth,ht=document.body.scrollHeight;cv.style.width=w+"px";cv.style.height=ht+"px";cv.width=w*d;cv.height=ht*d;ctx.setTransform(d,0,0,d,0,0);redraw()}
+const cv=$("#ink"),ctx=cv.getContext("2d");let strokes=[],pen=null,live=null,past=[],future=[];
+function snap(){past.push(strokes.slice());if(past.length>100)past.shift();future=[];hist()}
+function sizeInk(){cv.style.height="0";const d=devicePixelRatio||1,w=document.documentElement.scrollWidth,ht=Math.max(document.body.scrollHeight,innerHeight);cv.style.width=w+"px";cv.style.height=ht+"px";cv.width=w*d;cv.height=ht*d;ctx.setTransform(d,0,0,d,0,0);redraw()}
 function line(s){if(s.pts.length<2)return;ctx.strokeStyle=s.c;ctx.globalAlpha=.88;ctx.lineWidth=6;ctx.lineCap=ctx.lineJoin="round";ctx.beginPath();ctx.moveTo(s.pts[0][0],s.pts[0][1]);for(let i=1;i<s.pts.length-1;i++){const a=s.pts[i],b=s.pts[i+1];ctx.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2)}const l=s.pts[s.pts.length-1];ctx.lineTo(l[0],l[1]);ctx.stroke();ctx.globalAlpha=1}
 function redraw(){ctx.clearRect(0,0,cv.width,cv.height);strokes.forEach(line)}
 const pt=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
 /* drag = draw, tap/click = normal click, so nav, filters and cards keep working with a marker uncapped */
 let start=null,dragged=false;
-document.addEventListener("pointerdown",e=>{if(!pen||e.button>0||e.target.closest("nav,dialog,.toast"))return;start={x:e.clientX,y:e.clientY,p:pt(e)};dragged=false});
+document.addEventListener("pointerdown",e=>{dragged=false;if(!pen||e.button>0||e.target.closest("nav,dialog,.toast"))return;start={x:e.clientX,y:e.clientY,p:pt(e)};dragged=false});
 document.addEventListener("pointermove",e=>{if(!start)return;
-  if(!live){if(Math.hypot(e.clientX-start.x,e.clientY-start.y)<6)return;live={c:pen,pts:[start.p]};strokes.push(live);dragged=true}
+  if(!live){if(Math.hypot(e.clientX-start.x,e.clientY-start.y)<6)return;snap();live={c:pen,pts:[start.p]};strokes.push(live);dragged=true}
   e.preventDefault();live.pts.push(pt(e));redraw()},{passive:false});
 const end=()=>{start=null;live=null};
 document.addEventListener("pointerup",end);document.addEventListener("pointercancel",end);
@@ -864,9 +866,15 @@ const toast=$("#toast");let tt;const say=m=>{toast.textContent=m;toast.classList
 caps.addEventListener("click",e=>{const b=e.target.closest(".cap");if(!b)return;const on=pen!==b.dataset.c;pen=on?b.dataset.c:null;
   caps.querySelectorAll(".cap").forEach(c=>c.setAttribute("aria-pressed",on&&c===b));document.body.classList.toggle("doodling",!!pen);
   say(pen?"Marker uncapped. Drag to draw, click like normal. Tap it again to stop.":"Marker capped.")});
-$("#clear").onclick=()=>{strokes=[];redraw();say("Board wiped clean.")};
+$("#clear").onclick=()=>{if(!strokes.length)return;snap();strokes=[];redraw();say("Board wiped clean. Hit undo to bring it back.")};
+function hist(){$("#undo").disabled=!past.length;$("#redo").disabled=!future.length}
+function undo(){if(!past.length)return;future.push(strokes);strokes=past.pop();redraw();hist()}
+function redo(){if(!future.length)return;past.push(strokes);strokes=future.pop();redraw();hist()}
+$("#undo").onclick=undo;$("#redo").onclick=redo;
+document.addEventListener("keydown",e=>{if(!(e.metaKey||e.ctrlKey)||e.key.toLowerCase()!=="z"&&e.key.toLowerCase()!=="y"||e.target.closest("input,textarea,[contenteditable]"))return;
+  const r=e.shiftKey||e.key.toLowerCase()==="y";if(r?future.length:past.length){e.preventDefault();r?redo():undo()}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&pen&&!dlg.open){pen=null;document.body.classList.remove("doodling");caps.querySelectorAll(".cap").forEach(c=>c.setAttribute("aria-pressed","false"))}});
-new ResizeObserver(sizeInk).observe(document.body);
+new ResizeObserver(sizeInk).observe(document.body);addEventListener("resize",sizeInk);
 if(document.fonts)document.fonts.ready.then(sizeInk);
 }
 </script>
