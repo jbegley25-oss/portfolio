@@ -234,10 +234,10 @@ figure img[src*="tlm-ops"]{max-width:min(620px,100%)}
 body.doodling{cursor:crosshair;user-select:none;-webkit-user-select:none}body.doodling main,body.doodling header,body.doodling section{touch-action:none}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:30px;font-weight:700;z-index:30;transition:transform .3s}
 .toast{visibility:hidden}.toast.on{visibility:visible;transform:translateX(-50%) translateY(0)}
-@media(max-width:900px){.hero{grid-template-columns:1fr;min-height:0}.card.lead{grid-column:auto}.about{grid-template-columns:1fr}.proc{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.map{display:none}.mlist{display:flex;flex-wrap:wrap;gap:8px 18px;padding:0;margin:8px 0 0;list-style:none}
-.mlist button{font:400 24px "Permanent Marker",cursive;background:none;border:0;padding:4px 0;cursor:pointer;min-height:44px}
-.tray span{display:none}.tray{margin-left:0}.hint{display:none}}
+@media(max-width:1100px){.hero{grid-template-columns:1fr}.map.pre{display:none}.cta.gone{position:absolute}.map{max-width:900px;margin-inline:auto}}
+@media(max-width:900px){.card.lead{grid-column:auto}.about{grid-template-columns:1fr}.proc{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.map{aspect-ratio:640/990;margin-top:8px}.map .node text{font-size:42px}.map .node .sub{font-size:27px}
+.tray span{display:none}.tray{margin-left:0}.hint{margin-top:8px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.under path{stroke-dashoffset:0}}
 </style>
 </head>
@@ -599,23 +599,31 @@ const ring=(cx,cy,rx,ry,seed)=>{let d="",n=14;for(let i=0;i<=n+2;i++){const a=i/
 const svg=$("#mapsvg"),still=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const MSHORT={"Cooper-Hewitt, Smithsonian Design Museum":"Cooper-Hewitt Award","Lexus Eco Challenge":"Lexus Eco Challenge"};
 const moreKids=MORE.map((m,i)=>({id:"m"+i,c:m.c,short:MSHORT[m.t]||m.t,sub:m.k.split(" · ")[0].replace(/,.*$/,""),more:i}));
+const PORT=matchMedia("(max-width:600px)");
+const geo=()=>PORT.matches?{w:640,h:990,cx:320,cy:470}:{w:1000,h:620,cx:500,cy:300};
+const NODES_P={edulis:[160,255],leopard:[320,150],supply:[480,255],sage:[480,680],design:[160,680],more:[320,890]};
+const LAYOUT_P={2:[[320,170],[320,800]],3:[[160,230],[480,230],[320,800]],4:[[160,230],[480,230],[160,680],[480,680]],5:[[160,230],[480,230],[480,680],[160,680],[320,858]],6:[[160,255],[320,150],[480,255],[480,680],[160,680],[320,890]]};
+/* split a label into two balanced lines on narrow screens */
+function wrap(t,max){if(!PORT.matches||t.length<=max||!t.includes(" "))return[t];const w=t.split(" ");let best=null;for(let i=1;i<w.length;i++){const a=w.slice(0,i).join(" "),b=w.slice(i).join(" "),m=Math.max(a.length,b.length);if(!best||m<best[0])best=[m,a,b]}return[best[1],best[2]]}
+const tsp=(lines,x,lh)=>lines.map((l,i)=>`<tspan x="${x}" dy="${i?lh:0}">${esc(l)}</tspan>`).join("");
 const LAYOUT={2:[[500,72],[500,560]],4:[[215,120],[785,120],[215,500],[785,500]],5:[[500,50],[830,135],[780,548],[220,548],[170,135]],6:[[190,105],[500,48],[810,105],[765,525],[235,525],[500,600]]};
 const defs=`<defs>${Object.entries(C).map(([n,v])=>`<marker id="h-${n}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10" fill="none" stroke="${v}" stroke-width="2" stroke-linecap="round"/></marker>`).join("")}</defs>`;
 /* one level of the map: a center bubble and its branches */
 function level(center,items){
-  const cx=500,cy=300,fs=center.fs||50,rx=Math.max(150,center.label.length*fs*.33+40),ry=78;let o="";
-  items.forEach((p,i)=>{const [x,y]=p.pos,cn=Object.keys(C).find(k=>C[k]===p.c)||"black";
-    const dx=x-cx,dy=(y-6)-cy,ts=1.1/Math.hypot(dx/rx,dy/ry),hw=Math.max(p.short.length*10,(p.sub||"").length*5.4)+18,hh=50,te=Math.min(hw/Math.abs(dx||1e-6),hh/Math.abs(dy||1e-6),.6);
-    const sx=cx+dx*ts,sy=cy+dy*ts,ex=x-dx*te,ey=(y-6)-dy*te,mx=(sx+ex)/2+(i%2?36:-36),my=(sy+ey)/2+(i%2?-26:26);
+  const G=geo(),cx=G.cx,cy=G.cy,fs=center.fs||50,rx=Math.max(150,center.label.length*fs*.33+40),ry=78;let o="";
+  const ph=PORT.matches,LH=ph?44:36,SH=ph?30:28,S0=ph?36:30;items.forEach(p=>{p.L=wrap(p.short,12);p.S=wrap(p.sub||"",22);const e=(p.L.length-1)*LH+(p.S.length-1)*SH;p.P=[p.pos[0],p.pos[1]-(p.pos[1]<cy?e:0)]});
+  items.forEach((p,i)=>{const [x,y]=p.P,cn=Object.keys(C).find(k=>C[k]===p.c)||"black",ex2=(p.L.length-1)*LH+(p.S.length-1)*SH,yc=y-6+ex2/2;
+    const dx=x-cx,dy=yc-cy,ts=1.1/Math.hypot(dx/rx,dy/ry),hw=Math.max(...p.L.map(l=>l.length*(ph?12:10)),...p.S.map(l=>l.length*(ph?6.6:5.4)))+18,hh=50+ex2/2,te=Math.min(hw/Math.abs(dx||1e-6),hh/Math.abs(dy||1e-6),.6);
+    const sx=cx+dx*ts,sy=cy+dy*ts,ex=x-dx*te,ey=yc-dy*te,mx=(sx+ex)/2+(i%2?36:-36),my=(sy+ey)/2+(i%2?-26:26);
     o+=`<path class="arr" style="stroke:${p.c}" data-d="${center.slow?.62+i*.2:.15+i*.12}" marker-end="url(#h-${cn})" d="M${sx.toFixed(1)} ${sy.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}"/>`});
   o+=`<a class="hub${center.back?" back":" me"}" tabindex="0" aria-label="${center.back?"Back to the main map":"About Jack"}"><path class="ring${center.slow?" drawin":""}" pathLength="1" d="${ring(cx,cy,rx,ry,.3)}" stroke="${center.c}"/><text x="${cx}" y="${cy+fs*.32}" text-anchor="middle" style="font:400 ${fs}px 'Permanent Marker',cursive" fill="${center.c}">${esc(center.label)}</text></a>`;
-  items.forEach((p,i)=>{const [x,y]=p.pos;
+  items.forEach((p,i)=>{const [x,y]=p.P;
     if(center.slow)o+=`<g class="spark" style="--dl:${(.92+i*.2+.1).toFixed(2)}s">${[0,1,2,3,4,5].map(k=>{const a=k/6*Math.PI*2+i;return`<circle cx="${x}" cy="${y-10}" r="${k%2?2.5:3.5}" fill="${p.c}" style="--sx:${(Math.cos(a)*70).toFixed(0)}px;--sy:${(Math.sin(a)*40).toFixed(0)}px"/>`}).join("")}</g>`;
-    o+=`<a class="node${center.slow?" pop":""}" style="--dl:${center.slow?.92+i*.2:0}s;--tx:${((500-x)*.35).toFixed(0)}px;--ty:${((300-y)*.35).toFixed(0)}px" data-id="${p.id}" tabindex="0" aria-label="${esc(p.short)}"><g><text x="${x}" y="${y}" text-anchor="middle" fill="${p.c}">${esc(p.short)}</text><text class="sub" x="${x}" y="${y+30}" text-anchor="middle">${esc(p.sub||"")}</text></g></a>`});
+    o+=`<a class="node${center.slow?" pop":""}" style="--dl:${center.slow?.92+i*.2:0}s;--tx:${((cx-x)*.35).toFixed(0)}px;--ty:${((cy-y)*.35).toFixed(0)}px" data-id="${p.id}" tabindex="0" aria-label="${esc(p.short)}"><g><text x="${x}" y="${y}" text-anchor="middle" fill="${p.c}">${tsp(p.L,x,LH)}</text><text class="sub" x="${x}" y="${y+S0+(p.L.length-1)*LH}" text-anchor="middle">${tsp(p.S,x,SH)}</text></g></a>`});
   return o}
 function drawArrows(root){root.querySelectorAll(".arr").forEach(a=>{if(still)return;const L=a.getTotalLength()+2,t0=performance.now()+a.dataset.d*1000;a.setAttribute("stroke-dasharray",L);a.setAttribute("stroke-dashoffset",L);a.style.opacity=0;const mk=a.getAttribute("marker-end");a.removeAttribute("marker-end");
   const f=t=>{const k=Math.min(1,Math.max(0,(t-t0)/520)),e=k<.5?4*k*k*k:1-(-2*k+2)**3/2;a.style.opacity=k>0?1:0;a.setAttribute("stroke-dashoffset",L*(1-e));if(k>.88&&mk&&!a.hasAttribute("marker-end"))a.setAttribute("marker-end",mk);if(k<1)requestAnimationFrame(f);else a.removeAttribute("stroke-dasharray")};requestAnimationFrame(f)})}
-const top=NODES.map(([id,x,y])=>{const p=node(id);return{id,c:p.c,short:p.short,sub:p.sub||p.k.split(" · ")[0],pos:[x,y]}});
+const top=NODES.map(([id,x,y])=>{const p=node(id);return{id,c:p.c,short:p.short,sub:p.sub||p.k.split(" · ")[0],pos:[x,y],pos0:[x,y]}});
 function kidsOf(id){
   if(id==="socials")return SOC.map(x=>({...x}));
   if(id==="more")return[...["film","pz"].map(i=>{const f=P.find(p=>p.id===i);return{id:i,c:f.c,short:f.short,sub:f.sub}}),{id:"socials",c:SOCN.c,short:"Socials",sub:SOCN.sub},...moreKids]
@@ -624,17 +632,17 @@ let cur0=null,busy=false;
 function show(id,from){
   if(busy)return;busy=true;
   const old=svg.querySelector(".lvl");const isTop=!id;
-  const pos=from||[500,300];
+  const G=geo(),pos=from||[G.cx,G.cy];svg.setAttribute("viewBox",`0 0 ${G.w} ${G.h}`);
   const build=()=>{
     let html;
-    if(isTop){html=level({label:"JACK",c:C.black,slow:SLOW},top);SLOW=false}
-    else{const p=node(id)===MOREN?{c:C.black,short:"+ more"}:node(id);const kids=kidsOf(id);const L=LAYOUT[kids.length]||LAYOUT[5];kids.forEach((k,i)=>k.pos=L[i%L.length]);
+    if(isTop){top.forEach(t=>t.pos=PORT.matches?NODES_P[t.id]:t.pos0);html=level({label:"JACK",c:C.black,slow:SLOW},top);SLOW=false}
+    else{const p=node(id)===MOREN?{c:C.black,short:"+ more"}:node(id);const kids=kidsOf(id);const LY=PORT.matches?LAYOUT_P:LAYOUT,L=LY[kids.length]||LY[5];kids.forEach((k,i)=>k.pos=L[i%L.length]);
       html=level({label:id==="more"?"More":id==="socials"?"Socials":p.short,c:p.c,fs:id==="sage"?34:44,back:true},kids)}
     const g=document.createElementNS("http://www.w3.org/2000/svg","g");g.setAttribute("class","lvl in"+(isTop&&html.includes("drawin")?" slowin":""));g.innerHTML=html;
-    g.style.transformOrigin=isTop?`${pos[0]}px ${pos[1]}px`:"500px 300px";
+    g.style.transformOrigin=isTop?`${pos[0]}px ${pos[1]}px`:`${G.cx}px ${G.cy}px`;
     svg.appendChild(g);requestAnimationFrame(()=>requestAnimationFrame(()=>g.classList.remove("in")));drawArrows(g);
     $("#mapback").hidden=isTop;cur0=id;busy=false;
-    $("#maphint").textContent=isTop?"click a bubble to zoom in · click JACK to meet me":"click a project to open it · or tap the center to zoom back out";
+    const tp=PORT.matches?"tap":"click";$("#maphint").textContent=isTop?`${tp} a bubble to zoom in · ${tp} JACK to meet me`:`${tp} a project to open it · or tap the center to zoom back out`;
   };
   if(old){old.style.transformOrigin=`${pos[0]}px ${pos[1]}px`;old.classList.add(isTop?"shrink":"zoom");setTimeout(()=>{old.remove();build()},still?0:380)}else build();
 }
@@ -645,7 +653,7 @@ function pick(id,el){
   const mk=moreKids.find(k=>k.id===id);
   if(mk){const c=document.querySelectorAll(".mcard")[mk.more];tab("work");document.getElementById("more").scrollIntoView({behavior:"smooth"});if(c){c.classList.remove("flash");void c.offsetWidth;c.classList.add("flash")}return}
   if(P.some(p=>p.id===id))openP(id,true)}
-const back=()=>{if(cur0==="socials"){show("more",null);return}if(cur0){const n=NODES.find(([i])=>i===cur0);show(null,n?[n[1],n[2]]:null)}};
+const back=()=>{if(cur0==="socials"){show("more",null);return}if(cur0){const n=top.find(t=>t.id===cur0);show(null,n?n.pos:null)}};
 svg.addEventListener("click",e=>{const a=e.target.closest(".node");if(a){e.preventDefault();pick(a.dataset.id,a);return}if(e.target.closest(".hub.back"))back();else if(e.target.closest(".hub.me"))goAbout()});
 svg.addEventListener("keydown",e=>{if(e.key!=="Enter"&&e.key!==" ")return;const a=e.target.closest(".node");if(a){e.preventDefault();pick(a.dataset.id,a)}else if(e.target.closest(".hub.back")){e.preventDefault();back()}else if(e.target.closest(".hub.me")){e.preventDefault();goAbout()}});
 $("#mapback").onclick=back;
@@ -662,6 +670,7 @@ const mapEl=$("#map"),hintEl=$("#maphint");let revealed=false;
 mapEl.classList.add("pre");hintEl.style.visibility="hidden";
 function revealMap(){if(revealed)return;revealed=true;$("#reveal").classList.add("gone");mapEl.classList.remove("pre");SLOW=!still;show(null);setTimeout(()=>{hintEl.style.visibility="";hintEl.classList.add("fadein")},still?0:2300)}
 $("#reveal").onclick=revealMap;
+PORT.addEventListener("change",()=>{if(!revealed)return;const o=svg.querySelector(".lvl");if(o)o.remove();busy=false;show(cur0)});
 function tab(t){if(!["board","work","about"].includes(t))t="board";document.querySelectorAll(".pane").forEach(p=>p.hidden=p.id!=="pane-"+t);
  document.querySelectorAll(".links a").forEach(a=>a.setAttribute("aria-current",a.dataset.tab===t?"page":"false"));scrollTo(0,0);try{sizeInk()}catch(_){}}
 document.querySelectorAll(".links a,.logo").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const t=a.dataset.tab||"board";try{history.replaceState(null,"","#"+t)}catch(_){}tab(t)}));
