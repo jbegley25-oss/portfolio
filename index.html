@@ -602,8 +602,6 @@ svg.innerHTML=defs;let SLOW=false;
 function pick(id,el){
   {const so=SOC.find(x=>x.id===id);if(so){window.open(so.url,"_blank","noopener");return}}
   if(isGrp(id)){const t=el&&el.querySelector("text");show(id,t?[+t.getAttribute("x"),+t.getAttribute("y")]:null);return}
-  const mk=moreKids.find(k=>k.id===id);
-  if(mk){const c=document.querySelectorAll(".mcard")[mk.more];tab("work");document.getElementById("more").scrollIntoView({behavior:"smooth"});if(c){c.classList.remove("flash");void c.offsetWidth;c.classList.add("flash")}return}
   if(P.some(p=>p.id===id))openP(id,true)}
 const back=()=>{if(cur0==="socials"){show("more",null);return}if(cur0){const n=top.find(t=>t.id===cur0);show(null,n?n.pos:null)}};
 svg.addEventListener("click",e=>{const a=e.target.closest(".node");if(a){e.preventDefault();pick(a.dataset.id,a);return}if(e.target.closest(".hub.back"))back();else if(e.target.closest(".hub.me"))goAbout()});
@@ -625,10 +623,10 @@ $("#reveal").onclick=revealMap;
 PORT.addEventListener("change",()=>{if(!revealed)return;const o=svg.querySelector(".lvl");if(o)o.remove();busy=false;show(cur0)});
 function tab(t){if(!["board","work","about"].includes(t))t="board";document.querySelectorAll(".pane").forEach(p=>p.hidden=p.id!=="pane-"+t);
  document.querySelectorAll(".links a").forEach(a=>a.setAttribute("aria-current",a.dataset.tab===t?"page":"false"));scrollTo(0,0);try{sizeInk()}catch(_){}}
-document.querySelectorAll(".links a,.logo").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const t=a.dataset.tab||"board";try{history.replaceState(null,"","#"+t)}catch(_){}tab(t)}));
-try{if(location.hash)history.replaceState(null,"",location.pathname)}catch(_){}tab("board")
+document.querySelectorAll(".links a,.logo").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const t=a.dataset.tab||"board";tab(t)}));
+const clearHash=()=>{try{if(location.hash)history.replaceState(null,"",location.pathname+location.search)}catch(_){}};clearHash();tab("board");addEventListener("hashchange",()=>{clearHash();tab("board")})
 
-function goAbout(){try{history.replaceState(null,"","#about")}catch(_){}tab("about")}
+function goAbout(){tab("about")}
 /* cards + filters */
 const rot=[-1.2,.9,-.6,1.3,-1,.7];
 let ri=0;const card=p=>`<button type="button" class="card${p.lead?" lead":""}" data-id="${p.id}" data-tags="${p.tags.join(",")}" style="--c:${p.c};--r:${rot[(ri++)%6]}deg">${p.img?`<img class="thumb${p.fit?" fit":""}" src="${p.img}" alt="" loading="lazy">`:""}<span class="k">${esc(p.k)}</span><h3>${esc(p.t)}</h3><p>${esc(p.s)}</p><span class="yr">${esc(p.yr)}</span><span class="more">read the case study</span></button>`;
