@@ -193,22 +193,6 @@ figure.tape{position:relative;width:min(340px,80%);margin:34px auto 30px;padding
 #sheet.notitle #dlogo{margin-bottom:28px!important}#sheet.notitle #dk{margin-bottom:18px!important}#sheet.notitle #ds{font-size:1.4em!important;line-height:1.35!important;margin:0 0 36px!important}#sheet.notitle .pvgal{margin-bottom:34px!important}#sheet.notitle .pvpts li{margin-bottom:12px}
 .about p.pos{font-size:28px!important;line-height:1.2;margin:-4px 0 20px!important;color:#e0352b}.skills{margin-top:18px}.sk h4{font-size:19px;margin:16px 0 6px;font-weight:400}.note.obsess{margin-top:22px}
 .blabel{font:600 13px/1.2 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--c);margin:26px 0 10px}
-html.locked,html.locked body{overflow:hidden}
-#gate{position:fixed;inset:0;z-index:9999;background:#fff;display:grid;place-items:center;transition:opacity .55s ease,transform .55s ease}
-#gate.open{opacity:0;transform:scale(1.04);pointer-events:none}
-#gate .gbox{text-align:center;padding:24px}
-#gate .gk{font-size:46px;color:#1b1b1f;margin-bottom:6px}
-#gate .gp{font:500 15px/1.4 var(--sans);color:#6d6d76;margin:0 0 26px}
-#gate .gdots{display:flex;gap:16px;justify-content:center;margin-bottom:30px}
-#gate .gdots i{width:16px;height:16px;border-radius:50%;border:2.5px solid #1b1b1f;transition:background .15s,transform .15s}
-#gate .gdots i.on{background:#8a3fd1;border-color:#8a3fd1;transform:scale(1.1)}
-#gate.bad .gdots{animation:gshake .45s}
-#gate.bad .gdots i{border-color:#e0352b;background:#e0352b}
-@keyframes gshake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
-#gate .gpad{display:grid;grid-template-columns:repeat(3,76px);gap:14px;justify-content:center}
-#gate .gpad button{width:76px;height:76px;border-radius:50%;border:2.5px solid #1b1b1f;background:#fff;font:400 30px/1 "Permanent Marker",Kalam,cursive;color:#1b1b1f;cursor:pointer;transition:transform .1s,background .15s}
-#gate .gpad button:nth-child(3n+1){border-color:#e0352b;color:#e0352b}#gate .gpad button:nth-child(3n+2){border-color:#1f5fd1;color:#1f5fd1}#gate .gpad button:nth-child(3n){border-color:#12995a;color:#12995a}
-#gate .gpad button:hover{background:#f6f3fb}#gate .gpad button:active{transform:scale(.92)}
 .pvimg{margin:4px 0 22px!important}.pvimg img{max-height:34vh;object-fit:cover;object-position:top}
 .pvpts{list-style:none;padding:0!important;margin:0 0 26px!important;display:grid;gap:12px}
 .pvpts li{position:relative;padding-left:30px!important;font-size:18px!important;line-height:1.45;color:#1d1d22!important}.pvpts li::before{content:"";position:absolute;left:4px;top:.55em;width:12px;height:12px;border-radius:50%;background:var(--c)}
@@ -242,37 +226,6 @@ body.doodling{cursor:crosshair;user-select:none;-webkit-user-select:none}body.do
 </style>
 </head>
 <body>
-<div id="gate" role="dialog" aria-modal="true" aria-label="Enter the code to view the portfolio">
-  <div class="gbox">
-    <div class="gk mk">Jack B.</div>
-    <p class="gp">Enter the code to see the work</p>
-    <div class="gdots" id="gdots"><i></i><i></i><i></i><i></i></div>
-    <div class="gpad" id="gpad">
-      <button type="button">1</button><button type="button">2</button><button type="button">3</button>
-      <button type="button">4</button><button type="button">5</button><button type="button">6</button>
-      <button type="button">7</button><button type="button">8</button><button type="button">9</button>
-      <span></span><button type="button">0</button><button type="button" data-del="1" aria-label="Delete">⌫</button>
-    </div>
-  </div>
-</div>
-<script>
-(function(){
-  var CODE="5234",g=document.getElementById("gate"),dots=document.querySelectorAll("#gdots i"),v="";
-  try{if(sessionStorage.getItem("jb-ok")==="1"){g.remove();return}}catch(e){}
-  document.documentElement.classList.add("locked");
-  function draw(){dots.forEach(function(d,i){d.className=i<v.length?"on":""})}
-  function press(k){
-    if(k==="del"){v=v.slice(0,-1);draw();return}
-    if(v.length>=4)return;v+=k;draw();
-    if(v.length===4){
-      if(v===CODE){try{sessionStorage.setItem("jb-ok","1")}catch(e){}g.classList.add("open");document.documentElement.classList.remove("locked");setTimeout(function(){g.remove()},650)}
-      else{g.classList.add("bad");setTimeout(function(){g.classList.remove("bad");v="";draw()},520)}
-    }
-  }
-  document.getElementById("gpad").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;press(b.dataset.del?"del":b.textContent)});
-  document.addEventListener("keydown",function(e){if(!document.getElementById("gate"))return;if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace")press("del")});
-})();
-</script>
 <nav><div class="nav">
   <a class="logo mk" href="#top">Jack B.</a>
   <div class="links" role="tablist"><a href="#board" data-tab="board">Board</a><a href="#about" data-tab="about">About me</a></div>
@@ -290,7 +243,6 @@ body.doodling{cursor:crosshair;user-select:none;-webkit-user-select:none}body.do
     <h1 class="hi" id="hi" aria-label="Hi, I'm Jack."></h1>
     <svg class="under" viewBox="0 0 360 22" aria-hidden="true"><path pathLength="1" d="M4 14 C 70 4, 140 20, 210 10 S 320 6, 356 12" fill="none" stroke="#e0352b" stroke-width="5" stroke-linecap="round"/></svg>
     <p class="lede">I design products people actually want to use, then figure out how to tell the world about them.</p>
-    <p class="meta">Human-Centered Design, Claremont McKenna College '26 · Boulder, CO</p>
     <button type="button" class="cta" id="reveal">See the work</button>
     <ul class="mlist" id="mlist"></ul>
   </div>
@@ -674,7 +626,7 @@ PORT.addEventListener("change",()=>{if(!revealed)return;const o=svg.querySelecto
 function tab(t){if(!["board","work","about"].includes(t))t="board";document.querySelectorAll(".pane").forEach(p=>p.hidden=p.id!=="pane-"+t);
  document.querySelectorAll(".links a").forEach(a=>a.setAttribute("aria-current",a.dataset.tab===t?"page":"false"));scrollTo(0,0);try{sizeInk()}catch(_){}}
 document.querySelectorAll(".links a,.logo").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const t=a.dataset.tab||"board";try{history.replaceState(null,"","#"+t)}catch(_){}tab(t)}));
-{const h0=location.hash.slice(1);tab(["work","about"].includes(h0)?h0:"board")}
+try{if(location.hash)history.replaceState(null,"",location.pathname)}catch(_){}tab("board")
 
 function goAbout(){try{history.replaceState(null,"","#about")}catch(_){}tab("about")}
 /* cards + filters */
